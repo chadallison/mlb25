@@ -11,6 +11,7 @@ out on GitHub:
 
 - [Team Standings](#team-standings)
 - [Runs Scored and Allowed per Game](#runs-scored-and-allowed-per-game)
+- [Run Differentials](#run-differentials)
 
 ------------------------------------------------------------------------
 
@@ -23,6 +24,16 @@ out on GitHub:
 ### Runs Scored and Allowed per Game
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### NPR (in progress)
+
+------------------------------------------------------------------------
+
+### Run Differentials
+
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 

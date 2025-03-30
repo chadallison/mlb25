@@ -12,6 +12,7 @@ ___
 
 - [Team Standings]
 - [Runs Scored and Allowed per Game]
+- [Run Differentials]
 
 ___
 
@@ -85,7 +86,7 @@ team_hex = c(
   "#27251F", "#C6011F", "#0C2340", "#33006F", "#FA4616", "#EB6E1F",
   "#004687", "#BA0021", "#005A9C", "#00A3E0", "#FFC52F", "#D31145",
   "#002D72", "#003087", "#E81828", "#FDB827", "#2F241D", "#FD5A1E",
-  "#0C2C56", "#C41E3A", "#8FBCE6", "#C0111F", "#134A8E", "#AB0003"
+  "#0C2C56", "#C41E3A", "#8FBCE6", "#C0111F", "#134A8E", "#dcbdd0"
 )
 
 
@@ -171,6 +172,66 @@ team_rspg_rapg |>
        title = glue("Team Runs Scored/Allowed per Game as of {better_date(Sys.Date())}")) +
   scale_x_continuous(breaks = seq(0, 15, by = 1)) +
   scale_y_continuous(breaks = seq(0, 15, by = 1))
+```
+
+___
+
+### NPR (in progress)
+
+```{r include = F}
+end_with_npr = end_games |>
+  inner_join(team_rspg_rapg, by = c("home_team" = "team")) |>
+  rename(home_rspg = rspg, home_rapg = rapg) |>
+  inner_join(team_rspg_rapg, by = c("away_team" = "team")) |>
+  rename(away_rspg = rspg, away_rapg = rapg) |>
+  mutate(home_exp = (home_rspg + away_rapg) / 2,
+         away_exp = (away_rspg + home_rapg) / 2,
+         home_off_npr = home_score - home_exp,
+         home_def_npr = away_exp - away_score,
+         away_off_npr = away_score - away_exp,
+         away_def_npr = home_exp - home_score)
+
+home_npr_by_game = end_with_npr |>
+  transmute(date, team = home_team, off_npr = home_off_npr, def_npr = home_def_npr, home_away = "home")
+
+away_npr_by_game = end_with_npr |>
+  transmute(date, team = away_team, off_npr = away_off_npr, def_npr = away_def_npr, home_away = "away")
+
+team_npr_by_game = bind_rows(home_npr_by_game, away_npr_by_game) |>
+  arrange(team, date)
+
+# team_npr_by_game
+```
+
+___
+
+### Run Differentials
+
+```{r echo = F}
+home_margins = end_games |>
+  transmute(date, team = home_team, margin = home_score - away_score, home_away = "home")
+
+away_margins = end_games |>
+  transmute(date, team = away_team, margin = away_score - home_score, home_away = "away")
+
+team_game_margins = bind_rows(home_margins, away_margins) |>
+  arrange(team, date)
+
+team_game_margins |>
+  group_by(team) |>
+  summarise(diff_per_game = sum(margin) / n()) |>
+  inner_join(teams_info, by = "team") |>
+  mutate(pl = ifelse(diff_per_game >= 0, round(diff_per_game, 2), ""),
+         nl = ifelse(diff_per_game < 0, round(diff_per_game, 2), "")) |>
+  ggplot(aes(reorder(abb, diff_per_game), diff_per_game)) +
+  geom_col(aes(fill = team), show.legend = F) +
+  geom_text(aes(label = pl), size = 3, hjust = -0.25) +
+  geom_text(aes(label = nl), size = 3, hjust = 1.25) +
+  coord_flip() +
+  scale_fill_manual(values = team_hex) +
+  labs(x = NULL, y = "Avg. run differential",
+       title = glue("Team avg. run differentials as of {better_date(Sys.Date())}")) +
+  scale_y_continuous(breaks = seq(-10, 10, by = 1))
 ```
 
 ___
