@@ -15,6 +15,7 @@ out on GitHub:
 - [Pythagorean Wins](#pythagorean-wins)
 - [Actual vs Pythagorean Win
   Percentages](#actual-vs-pythagorean-win-percentages)
+- [Winning and Losing Streaks](#winning-and-losing-streaks)
 
 ------------------------------------------------------------------------
 
@@ -49,6 +50,12 @@ out on GitHub:
 ### Actual vs Pythagorean Win Percentages
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Winning and Losing Streaks
+
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 

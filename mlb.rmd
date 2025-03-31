@@ -15,6 +15,7 @@ ___
 - [Run Differentials]
 - [Pythagorean Wins]
 - [Actual vs Pythagorean Win Percentages]
+- [Winning and Losing Streaks]
 
 ___
 
@@ -287,15 +288,44 @@ team_records |>
 
 ___
 
-### More to come as the season goes on!
+### Winning and Losing Streaks
+
+```{r echo = F}
+team_game_wl = end_games |>
+  transmute(date, team = win_team, wl = "win") |>
+  bind_rows(end_games |>
+  transmute(date, team = lose_team, wl = "loss")) |>
+  arrange(team, date)
+
+team_wl_streaks = team_game_wl |>
+  group_by(team) |>
+  mutate(streak_group = cumsum(wl != lag(wl, default = first(wl))),
+         streak = sequence(rle(wl)$lengths),
+         streak_type = ifelse(wl == "win", "W", "L"),
+         streak_pn = ifelse(streak_type == "W", streak, -streak)) |>
+  slice_max(date, n = 1, with_ties = F) |>
+  ungroup() |>
+  mutate(team_streak = paste0(streak_type, streak))
+
+team_wl_streaks |>
+  mutate(pl = ifelse(streak_pn >= 0, team_streak, ""),
+         nl = ifelse(streak_pn < 0, team_streak, "")) |>
+  ggplot(aes(reorder(team, streak_pn), streak_pn)) +
+  geom_col(aes(fill = team), show.legend = F) +
+  geom_text(aes(label = pl), size = 3, hjust = -0.25) +
+  geom_text(aes(label = nl), size = 3, hjust = 1.25) +
+  coord_flip() +
+  scale_fill_manual(values = team_hex) +
+  scale_y_continuous(breaks = seq(-25, 25, by = 1)) +
+  labs(x = NULL, y = "Winning/Losing Streak",
+       title = glue("Team winning/losing streaks as of {better_date(Sys.Date())}"))
+```
 
 ___
 
+### More to come as the season goes on!
 
-
-
-
-
+___
 
 
 
