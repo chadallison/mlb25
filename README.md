@@ -12,6 +12,9 @@ out on GitHub:
 - [Team Standings](#team-standings)
 - [Runs Scored and Allowed per Game](#runs-scored-and-allowed-per-game)
 - [Run Differentials](#run-differentials)
+- [Pythagorean Wins](#pythagorean-wins)
+- [Actual vs Pythagorean Win
+  Percentages](#actual-vs-pythagorean-win-percentages)
 
 ------------------------------------------------------------------------
 
@@ -34,6 +37,18 @@ out on GitHub:
 ### Run Differentials
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Pythagorean Wins
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Actual vs Pythagorean Win Percentages
+
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
