@@ -62,3 +62,9 @@ out on GitHub:
 ### More to come as the season goes on!
 
 ------------------------------------------------------------------------
+
+### Home and Away Splits
+
+``` r
+# logic here
+```
