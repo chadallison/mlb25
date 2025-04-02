@@ -133,7 +133,7 @@ team_records = team_wins |>
   inner_join(teams_info, by = "team")
 
 team_records |>
-  ggplot(aes(reorder(reorder(team, win_pct), wins), win_pct)) +
+  ggplot(aes(reorder(reorder(team, wins), win_pct), win_pct)) +
   geom_col(aes(fill = team), show.legend = F) +
   geom_text(aes(label = record), size = 3, hjust = -0.2) +
   coord_flip(ylim = c(0, max(team_records$win_pct) * 1.05)) +
@@ -203,12 +203,14 @@ away_npr_by_game = end_with_npr |>
 team_npr_by_game = bind_rows(home_npr_by_game, away_npr_by_game) |>
   arrange(team, date)
 
-# need everyone to have played multiple opponents for this to work
-# team_npr_by_game |>
-#   group_by(team) |>
-#   summarise(off_npr = sum(off_npr),
-#             def_npr = sum(def_npr),
-#             ovr_npr = off_npr + def_npr)
+team_npr = team_npr_by_game |>
+  group_by(team) |>
+  summarise(off_npr = round(sum(off_npr), 3),
+            def_npr = round(sum(def_npr), 3),
+            ovr_npr = off_npr + def_npr)
+
+team_npr |>
+  arrange(desc(ovr_npr))
 ```
 
 ___
