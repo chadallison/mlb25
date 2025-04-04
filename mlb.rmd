@@ -353,60 +353,54 @@ ___
 ### Home and Away Splits
 
 ```{r}
-# logic here
+head(end_games)
 ```
 
 ___
 
-```{r include = F}
+```{r echo = F}
 get_game_pitcher_outs_bases = function(pk) {
-  pitcher_outs_recorded = mlb_pbp(game_pk = pk) |>
-    filter(!is.na(pitchNumber)) |>
-    group_by(atBatIndex) |>
-    slice_max(index, n = 1, with_ties = F) |>
-    ungroup() |>
-    mutate(outs_on_play = count.outs.end - count.outs.start) |>
-    group_by(pitcher_name = matchup.pitcher.fullName) |>
-    summarise(outs_recorded = sum(outs_on_play),
-              innings_pitched = outs_recorded / 3) |>
-    arrange(desc(outs_recorded))
+  pbp_data = mlb_pbp(game_pk = pk) |>
+    filter(!is.na(pitchNumber))
   
-  pitcher_bases_allowed = mlb_pbp(game_pk = pk) |>
-    filter(!is.na(pitchNumber) & result.eventType != "field_error") |>
+  last_pitches = pbp_data |>
     group_by(atBatIndex) |>
     slice_max(index, n = 1, with_ties = F) |>
-    ungroup() |>
-    mutate(bases_allowed = case_when(result.eventType %in% c("single", "walk", "hit_by_pitch", "intent_walk") ~ 1,
+    ungroup()
+
+  pitcher_stats = last_pitches |> 
+    mutate(outs_on_play = count.outs.end - count.outs.start,
+           bases_allowed = case_when(result.eventType %in% c("single", "walk", "hit_by_pitch", "intent_walk") ~ 1,
                                      result.eventType == "double" ~ 2,
                                      result.eventType == "triple" ~ 3,
                                      result.eventType == "home_run" ~ 4,
                                      result.eventType == "grounded_into_double_play" ~ -1,
-                                     T ~ 0)) |>
-    group_by(pitcher_name = matchup.pitcher.fullName) |>
-    summarise(bases_allowed = sum(bases_allowed)) |>
-    arrange(desc(bases_allowed))
-  
-  res = pitcher_outs_recorded |>
-    inner_join(pitcher_bases_allowed, by = "pitcher_name")
-  
-  return(res)
+                                     T ~ 0)) |> 
+    filter(result.eventType != "field_error") |>
+    group_by(pitcher_name = matchup.pitcher.fullName) |> 
+    summarise(outs_recorded = sum(outs_on_play),
+              innings_pitched = outs_recorded / 3,
+              bases_allowed = sum(bases_allowed),
+              .groups = "drop") |> 
+    arrange(desc(outs_recorded)) |>
+    mutate(game_pk = pk)
+
+  return(pitcher_stats)
 }
 
-# all_pitcher_bases_outs = data.frame()
+# all_pitcher_bases_outs = map_dfr(end_games$game_pk, get_game_pitcher_outs_bases)
 # 
-# for (new_pk in end_games$game_pk) {
-#   all_pitcher_bases_outs = bind_rows(all_pitcher_bases_outs, get_game_pitcher_outs_bases(pk = new_pk))
-# }
-# 
-# all_pitcher_bases_outs |>
-#   group_by(pitcher_name) |>
+# all_pitcher_bases_outs |> 
+#   group_by(pitcher_name) |> 
 #   summarise(outs = sum(outs_recorded),
-#             bases = sum(bases_allowed)) |>
+#             bases = sum(bases_allowed),
+#             .groups = "drop") |> 
 #   mutate(bpip = round(bases / (outs / 3), 3),
-#          pct = percent_rank(outs)) |>
-#   filter(pct >= 0.75) |>
+#          pct = percent_rank(outs)) |> 
+#   filter(pct >= 0.75) |> 
 #   arrange(bpip)
 ```
+
 
 
 

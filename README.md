@@ -108,7 +108,18 @@ interpretability.
 ### Home and Away Splits
 
 ``` r
-# logic here
+head(end_games)
 ```
+
+    ## # A tibble: 6 × 10
+    ##   date       game_pk away_score away_team          home_team home_score win_team
+    ##   <date>       <dbl>      <dbl> <chr>              <chr>          <dbl> <chr>   
+    ## 1 2025-03-18  778563          4 Los Angeles Dodge… Chicago …          1 Los Ang…
+    ## 2 2025-03-19  778564          6 Los Angeles Dodge… Chicago …          3 Los Ang…
+    ## 3 2025-03-27  778557          2 Milwaukee Brewers  New York…          4 New Yor…
+    ## 4 2025-03-27  778556         12 Baltimore Orioles  Toronto …          2 Baltimo…
+    ## 5 2025-03-27  778553          5 Boston Red Sox     Texas Ra…          2 Boston …
+    ## 6 2025-03-27  778555          7 Philadelphia Phil… Washingt…          3 Philade…
+    ## # ℹ 3 more variables: lose_team <chr>, win_score <dbl>, lose_score <dbl>
 
 ------------------------------------------------------------------------
