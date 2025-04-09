@@ -439,6 +439,10 @@ get_game_pitcher_outs_bases = function(pk) {
 
 
 
+```{r}
+team_npr |>
+  arrange(desc(ovr_npr))
+```
 
 
 
