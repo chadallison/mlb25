@@ -12,6 +12,7 @@ out on GitHub:
 - [Team Standings](#team-standings)
 - [Runs Scored and Allowed per Game](#runs-scored-and-allowed-per-game)
 - [NPR](#npr)
+- [Offensive and Defensive NPR](#offensive-and-defensive-npr)
 - [Run Differentials](#run-differentials)
 - [Pythagorean Wins](#pythagorean-wins)
 - [Actual vs Pythagorean Win
@@ -78,27 +79,33 @@ interpretability.
 
 ------------------------------------------------------------------------
 
-### Run Differentials
+### Offensive and Defensive NPR
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
-### Pythagorean Wins
+### Run Differentials
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
-### Actual vs Pythagorean Win Percentages
+### Pythagorean Wins
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
-### Winning and Losing Streaks
+### Actual vs Pythagorean Win Percentages
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Winning and Losing Streaks
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
@@ -108,26 +115,6 @@ interpretability.
 
 ### Home and Away Splits
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ------------------------------------------------------------------------
-
-``` r
-team_npr |>
-  arrange(desc(ovr_npr))
-```
-
-    ## # A tibble: 30 × 4
-    ##    team                  off_npr def_npr ovr_npr
-    ##    <chr>                   <dbl>   <dbl>   <dbl>
-    ##  1 Chicago Cubs            1.07    0.096   1.17 
-    ##  2 Los Angeles Dodgers     0.4     0.49    0.89 
-    ##  3 Arizona Diamondbacks    0.299   0.474   0.773
-    ##  4 Detroit Tigers          0.448   0.299   0.747
-    ##  5 New York Yankees        1.01   -0.271   0.743
-    ##  6 San Francisco Giants    0.397   0.113   0.51 
-    ##  7 Philadelphia Phillies   0.286   0.201   0.487
-    ##  8 New York Mets          -0.079   0.489   0.41 
-    ##  9 Toronto Blue Jays      -0.057   0.446   0.389
-    ## 10 San Diego Padres       -0.076   0.425   0.349
-    ## # ℹ 20 more rows
