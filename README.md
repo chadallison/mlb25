@@ -19,6 +19,8 @@ out on GitHub:
   Percentages](#actual-vs-pythagorean-win-percentages)
 - [Winning and Losing Streaks](#winning-and-losing-streaks)
 - [Home and Away Splits](#home-and-away-splits)
+- [Rolling Window Pythagorean Wins (in
+  progress!)](#rolling-window-pythagorean-wins-in-progress)
 
 ------------------------------------------------------------------------
 
@@ -116,5 +118,11 @@ interpretability.
 ### Home and Away Splits
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Rolling Window Pythagorean Wins (in progress!)
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ------------------------------------------------------------------------

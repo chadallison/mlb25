@@ -19,6 +19,7 @@ ___
 - [Actual vs Pythagorean Win Percentages]
 - [Winning and Losing Streaks]
 - [Home and Away Splits]
+- [Rolling Window Pythagorean Wins (in progress!)]
 
 ___
 
@@ -409,6 +410,32 @@ home_wl |>
        title = glue("Home and away win percentages as of {better_date(Sys.Date())}")) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent) +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent)
+```
+
+___
+
+### Rolling Window Pythagorean Wins (in progress!)
+
+```{r echo = F}
+window_size = 3
+
+team_scored_allowed |>
+  arrange(team, date) |>
+  mutate(score_roll = rollapply(scored, width = window_size, align = "right", FUN = "sum", fill = NA),
+         allow_roll = rollapply(allowed, width = window_size, align = "right", FUN = "sum", fill = NA),
+         .by = "team") |>
+  filter(!is.na(score_roll) & !is.na(allow_roll)) |>
+  mutate(py = (score_roll ^ 2) / (score_roll ^ 2 + allow_roll ^ 2)) |>
+  inner_join(teams_info, by = "team") |>
+  mutate(window_num = row_number(), .by = "team") |>
+  ggplot(aes(window_num, py)) +
+  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  scale_color_manual(values = team_hex) +
+  facet_wrap(vars(abb), scale = "free_x") +
+  theme(axis.text = element_blank()) +
+  labs(x = "Window number", y = "Pythagorean win percentage",
+       title = "Pythagorean win percentages in three-game rolling windows")
 ```
 
 ___
