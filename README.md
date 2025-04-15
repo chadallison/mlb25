@@ -21,6 +21,7 @@ out on GitHub:
 - [Home and Away Splits](#home-and-away-splits)
 - [Rolling Window Pythagorean Wins (in
   progress!)](#rolling-window-pythagorean-wins-in-progress)
+- [Rolling Window NPR (in progress!)](#rolling-window-npr-in-progress)
 
 ------------------------------------------------------------------------
 
@@ -126,3 +127,7 @@ interpretability.
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ------------------------------------------------------------------------
+
+### Rolling Window NPR (in progress!)
+
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
