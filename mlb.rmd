@@ -463,6 +463,12 @@ team_npr_by_game |>
 
 ___
 
+```{r message = F, warning = F}
+cubs_pk = 778305
+
+baseballr::mlb_pbp(game_pk = cubs_pk) |>
+  filter(result.description == "Nico Hoerner triples (1) on a sharp line drive to center fielder Jason Heyward. Dansby Swanson scores.")
+```
 
 
 
