@@ -22,6 +22,8 @@ out on GitHub:
 - [Rolling Window Pythagorean Wins (in
   progress!)](#rolling-window-pythagorean-wins-in-progress)
 - [Rolling Window NPR (in progress!)](#rolling-window-npr-in-progress)
+- [Records Against Teams with Winning vs Losing
+  Records](#records-against-teams-with-winning-vs-losing-records)
 
 ------------------------------------------------------------------------
 
@@ -134,28 +136,8 @@ interpretability.
 
 ------------------------------------------------------------------------
 
-``` r
-cubs_pk = 778305
+### Records Against Teams with Winning vs Losing Records
 
-baseballr::mlb_pbp(game_pk = cubs_pk) |>
-  filter(result.description == "Nico Hoerner triples (1) on a sharp line drive to center fielder Jason Heyward. Dansby Swanson scores.")
-```
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
-    ## # A tibble: 8 × 152
-    ##   game_pk game_date  index startTime    endTime isPitch type  playId pitchNumber
-    ##     <dbl> <chr>      <int> <chr>        <chr>   <lgl>   <chr> <chr>        <int>
-    ## 1  778305 2025-04-16     7 2025-04-16T… 2025-0… TRUE    pitch f351b…           3
-    ## 2  778305 2025-04-16     6 2025-04-16T… 2025-0… TRUE    pitch 31c67…           2
-    ## 3  778305 2025-04-16     5 2025-04-16T… 2025-0… TRUE    pitch 6019e…           1
-    ## 4  778305 2025-04-16     0 2025-04-16T… 2025-0… FALSE   acti… <NA>            NA
-    ## 5  778305 2025-04-16     1 2025-04-16T… 2025-0… FALSE   acti… <NA>            NA
-    ## 6  778305 2025-04-16     2 2025-04-16T… 2025-0… FALSE   acti… <NA>            NA
-    ## 7  778305 2025-04-16     3 2025-04-16T… 2025-0… FALSE   acti… <NA>            NA
-    ## 8  778305 2025-04-16     4 2025-04-16T… 2025-0… FALSE   step… f6bda…          NA
-    ## # ℹ 143 more variables: details.description <chr>, details.event <chr>,
-    ## #   details.awayScore <int>, details.homeScore <int>,
-    ## #   details.isScoringPlay <lgl>, details.hasReview <lgl>, details.code <chr>,
-    ## #   details.ballColor <chr>, details.isInPlay <lgl>, details.isStrike <lgl>,
-    ## #   details.isBall <lgl>, details.call.code <chr>,
-    ## #   details.call.description <chr>, count.balls.start <int>,
-    ## #   count.strikes.start <int>, count.outs.start <int>, player.id <int>, …
+------------------------------------------------------------------------

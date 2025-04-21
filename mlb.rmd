@@ -21,6 +21,7 @@ ___
 - [Home and Away Splits]
 - [Rolling Window Pythagorean Wins (in progress!)]
 - [Rolling Window NPR (in progress!)]
+- [Records Against Teams with Winning vs Losing Records]
 
 ___
 
@@ -463,14 +464,39 @@ team_npr_by_game |>
 
 ___
 
-```{r message = F, warning = F}
-cubs_pk = 778305
+### Records Against Teams with Winning vs Losing Records
 
-baseballr::mlb_pbp(game_pk = cubs_pk) |>
-  filter(result.description == "Nico Hoerner triples (1) on a sharp line drive to center fielder Jason Heyward. Dansby Swanson scores.")
+```{r echo = F}
+team_pct_df = team_records |> select(team, win_pct)
+
+above_below_500_res = end_games |>
+  transmute(team = home_team, opp = away_team, win_flg = ifelse(win_team == home_team, 1, 0)) |>
+  bind_rows(end_games |>
+  transmute(team = away_team, opp = home_team, win_flg = ifelse(win_team == away_team, 1, 0))) |>
+  inner_join(team_pct_df, by = c("opp" = "team")) |>
+  rename(opp_win_pct = win_pct)
+
+above_below_500_res |>
+  mutate(ab500 = ifelse(opp_win_pct >= 50, "above", "below")) |>
+  group_by(team, ab500) |>
+  summarise(pct = round(mean(win_flg) * 100, 2),
+            .groups = "drop") |>
+  pivot_wider(id_cols = team, names_from = "ab500", values_from = "pct") |>
+  inner_join(teams_info, by = "team") |>
+  ggplot(aes(above, below)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_vline(xintercept = 50, linetype = "dashed", alpha = 0.25) +
+  geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.25) +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  labs(x = "Win Percentage vs. Above .500 Teams",
+       y = "Win Percentage vs. Below .500 Teams",
+       title = glue("Win percentages vs. above/below .500 teams as of {better_date(Sys.Date())}")) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1))
 ```
 
-
+___
 
 
 
