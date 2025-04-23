@@ -141,3 +141,28 @@ interpretability.
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ------------------------------------------------------------------------
+
+``` r
+# games played vs above .500 teams and win pct
+above_500_cnt_pct = above_below_500_res |>
+  filter(opp_win_pct >= 50) |>
+  group_by(team) |>
+  summarise(cnt = n(),
+            pct = round(mean(win_flg) * 100)) |>
+  inner_join(teams_info, by = "team")
+
+above_500_cnt_pct |>
+  ggplot(aes(cnt, pct)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_vline(xintercept = mean(above_500_cnt_pct$cnt), linetype = "dashed", alpha = 0.5) +
+  geom_hline(yintercept = 50, linetype = "dashed", alpha = 0.5) +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 32) +
+  scale_x_continuous(breaks = seq(0, 100, by = 2)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1)) +
+  labs(x = "Games played against .500 or better teams",
+       y = "Win percentage vs. .500 or better teams",
+       title = glue("Performance against .500 or better teams as of {better_date(Sys.Date())}"))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
