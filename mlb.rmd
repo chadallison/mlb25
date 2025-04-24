@@ -23,6 +23,7 @@ ___
 - [Rolling Window NPR]
 - [Records Against Teams with Winning vs Losing Records]
 - [Performance Against Teams with Winning Record]
+- [NPR Trends]
 
 ___
 
@@ -527,21 +528,37 @@ ___
 
 ### NPR Trends
 
-```{r}
-team_records
-
-team_npr_by_game |>
+```{r echo = F}
+team_npr_deltas = team_npr_by_game |>
   transmute(date, team, npr = off_npr + def_npr) |>
   arrange(team, date) |>
-  mutate(game_num = row_number(), .by = "team") |>
-  inner_join(select(team_records, team, gp), by = "team") |>
-  mutate(l10_group = ifelse(game_num > gp - 10, "last_10", "other")) |>
-  group_by(team, l10_group) |>
-  summarise(npr = sum(npr),
-            .groups = "drop") |>
-  pivot_wider(id_cols = "team", names_from = "l10_group", values_from = "npr") |>
-  mutate(total = last_10 + other)
+  mutate(gn = row_number(),
+         limit = n() - 10,
+         .by = "team") |>
+  filter(gn <= limit) |>
+  group_by(team) |>
+  summarise(npr_prev_x = round(mean(npr), 3)) |>
+  inner_join((select(team_npr, team, ovr_npr)), by = "team") |>
+  mutate(delta = ovr_npr - npr_prev_x,
+         team_label = paste0(team, " (", round(delta, 2), ")"))
+
+team_npr_deltas |>
+  ggplot(aes(x = reorder(team_label, ovr_npr), xend = reorder(team_label, ovr_npr),
+             y = npr_prev_x, yend = ovr_npr, col = team)) +
+  geom_segment(linewidth = 3.5, show.legend = F) +
+  geom_text(aes(y = ovr_npr, label = ifelse(delta >= 0, "→", "")),
+            size = 4, hjust = -0.2, vjust = 0.25, color = "black", alpha = 0.75) +
+  geom_text(aes(y = ovr_npr, label = ifelse(delta < 0, "←", "")),
+            size = 4, hjust = 1.2, vjust = 0.25, color = "black", alpha = 0.75) +
+  coord_flip() +
+  labs(x = NULL, y = "NPR Before/After Last Ten Games",
+       title = "Team NPR Trends in Past Ten Games",
+       subtitle = "Teams ordered by current NPR; number in parentheses represents change in last ten") +
+  scale_y_continuous(breaks = seq(-5, 5, by = 0.25)) +
+  scale_color_manual(values = team_hex)
 ```
+
+___
 
 
 

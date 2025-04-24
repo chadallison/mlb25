@@ -25,6 +25,7 @@ out on GitHub:
   Records](#records-against-teams-with-winning-vs-losing-records)
 - [Performance Against Teams with Winning
   Record](#performance-against-teams-with-winning-record)
+- [NPR Trends](#npr-trends)
 
 ------------------------------------------------------------------------
 
@@ -151,50 +152,6 @@ interpretability.
 
 ### NPR Trends
 
-``` r
-team_records
-```
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
-    ## # A tibble: 30 × 8
-    ##    team                  wins losses    gp win_pct record abb   hex    
-    ##    <chr>                <dbl>  <dbl> <dbl>   <dbl> <chr>  <chr> <chr>  
-    ##  1 Arizona Diamondbacks    14     10    24    58.3 14-10  ARI   #A71930
-    ##  2 Athletics               11     13    24    45.8 11-13  ATH   #003831
-    ##  3 Atlanta Braves          10     14    24    41.7 10-14  ATL   #CE1141
-    ##  4 Baltimore Orioles        9     14    23    39.1 9-14   BAL   #DF4601
-    ##  5 Boston Red Sox          14     12    26    53.8 14-12  BOS   #BD3039
-    ##  6 Chicago Cubs            16     10    26    61.5 16-10  CHC   #0E3386
-    ##  7 Chicago White Sox        5     19    24    20.8 5-19   CWS   #27251F
-    ##  8 Cincinnati Reds         12     13    25    48   12-13  CIN   #C6011F
-    ##  9 Cleveland Guardians     14     10    24    58.3 14-10  CLE   #0C2340
-    ## 10 Colorado Rockies         4     18    22    18.2 4-18   COL   #33006F
-    ## # ℹ 20 more rows
-
-``` r
-team_npr_by_game |>
-  transmute(date, team, npr = off_npr + def_npr) |>
-  arrange(team, date) |>
-  mutate(game_num = row_number(), .by = "team") |>
-  inner_join(select(team_records, team, gp), by = "team") |>
-  mutate(l10_group = ifelse(game_num > gp - 10, "last_10", "other")) |>
-  group_by(team, l10_group) |>
-  summarise(npr = sum(npr),
-            .groups = "drop") |>
-  pivot_wider(id_cols = "team", names_from = "l10_group", values_from = "npr") |>
-  mutate(total = last_10 + other)
-```
-
-    ## # A tibble: 30 × 4
-    ##    team                 last_10   other  total
-    ##    <chr>                  <dbl>   <dbl>  <dbl>
-    ##  1 Arizona Diamondbacks  11.8     3.62   15.4 
-    ##  2 Athletics              3.38  -11.1    -7.72
-    ##  3 Atlanta Braves        -0.173  -5.61   -5.78
-    ##  4 Baltimore Orioles    -15.5     0.272 -15.2 
-    ##  5 Boston Red Sox        -3.42   -6.60  -10.0 
-    ##  6 Chicago Cubs          13.4    13.7    27.0 
-    ##  7 Chicago White Sox    -27.2     7.89  -19.3 
-    ##  8 Cincinnati Reds       14.5    -0.320  14.2 
-    ##  9 Cleveland Guardians   -4.79   -2.43   -7.22
-    ## 10 Colorado Rockies     -11.2   -14.0   -25.2 
-    ## # ℹ 20 more rows
+------------------------------------------------------------------------
