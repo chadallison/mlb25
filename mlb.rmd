@@ -485,6 +485,9 @@ above_below_500_res |>
             .groups = "drop") |>
   pivot_wider(id_cols = team, names_from = "ab500", values_from = "pct") |>
   inner_join(teams_info, by = "team") |>
+  # this might not be the best way to handle but handles an edge case where
+  # the cubs are yet to play a sub .500 opponent as of 04/26/2025
+  mutate(above = coalesce(above, below), below = coalesce(below, above)) |>
   ggplot(aes(above, below)) +
   geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
   geom_vline(xintercept = 50, linetype = "dashed", alpha = 0.25) +
