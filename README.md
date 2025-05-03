@@ -74,7 +74,7 @@ expected score, 3 - 3.5 = -0.5, and their defensive NPR is the Cubs’
 expected score minus their actual score, 3.63 - 5 = -1.37. Notice how
 these numbers are opposite each other. So each team will have an
 offensive and defensive NPR for each game, which are aggregated in the
-plot below.
+plot above.
 
 Of course, there are so many other factors that would play into a team’s
 true expected value, such as any injuries, starting pitchers, weather,
