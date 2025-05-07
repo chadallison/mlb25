@@ -188,3 +188,5 @@ team_runs_avg_sd |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
