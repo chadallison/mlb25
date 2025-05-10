@@ -190,3 +190,47 @@ team_runs_avg_sd |>
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+``` r
+team_scored_allowed |>
+  mutate(game_num = row_number(), .by = "team") |>
+  mutate(group_of_7 = ((game_num - 1) %/% 7) + 1) |>
+  group_by(team, group_of_7) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed),
+            .groups = "drop") |>
+  mutate(py = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
+  ggplot(aes(group_of_7, py)) +
+  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
+  facet_wrap(vars(team), scales = "free_x") +
+  scale_color_manual(values = team_hex) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+team_game_margins |>
+  group_by(team) |>
+  summarise(reg = mean(margin),
+            trim = mean(margin, trim = 0.1)) |>
+  mutate(diff = trim - reg,
+         reg_rank = rank(-reg),
+         trim_rank = rank(-trim, ties.method = "min")) |>
+  arrange(desc(trim))
+```
+
+    ## # A tibble: 30 × 6
+    ##    team                   reg  trim    diff reg_rank trim_rank
+    ##    <chr>                <dbl> <dbl>   <dbl>    <dbl>     <int>
+    ##  1 Detroit Tigers       2.15  2.03  -0.124         1         1
+    ##  2 New York Yankees     2.08  1.81  -0.275         2         2
+    ##  3 Los Angeles Dodgers  1.38  1.52   0.131         4         3
+    ##  4 New York Mets        1.64  1.45  -0.186         3         4
+    ##  5 San Diego Padres     0.892 1.06   0.173         6         5
+    ##  6 Chicago Cubs         1.36  1.03  -0.329         5         6
+    ##  7 San Francisco Giants 0.763 0.812  0.0493        7         7
+    ##  8 Boston Red Sox       0.45  0.531  0.0812       12         8
+    ##  9 St. Louis Cardinals  0.436 0.515  0.0793       13         9
+    ## 10 Minnesota Twins      0.526 0.5   -0.0263       11        10
+    ## # ℹ 20 more rows

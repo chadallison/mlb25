@@ -546,6 +546,7 @@ team_npr_deltas = team_npr_by_game |>
          team_label = paste0(team, " (", round(delta, 2), ")"))
 
 team_npr_deltas |>
+  inner_join(teams_info, by = "team") |>
   ggplot(aes(x = reorder(team_label, ovr_npr), xend = reorder(team_label, ovr_npr),
              y = npr_prev_x, yend = ovr_npr, col = team)) +
   geom_segment(linewidth = 3.5, show.legend = F) +
@@ -617,8 +618,33 @@ team_diffs |>
        title = glue("Team run differentials as of {better_date(Sys.Date())}"))
 ```
 
+```{r}
+team_scored_allowed |>
+  mutate(game_num = row_number(), .by = "team") |>
+  mutate(group_of_7 = ((game_num - 1) %/% 7) + 1) |>
+  group_by(team, group_of_7) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed),
+            .groups = "drop") |>
+  mutate(py = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
+  ggplot(aes(group_of_7, py)) +
+  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
+  facet_wrap(vars(team), scales = "free_x") +
+  scale_color_manual(values = team_hex) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5)
+```
 
 
+```{r}
+team_game_margins |>
+  group_by(team) |>
+  summarise(reg = mean(margin),
+            trim = mean(margin, trim = 0.1)) |>
+  mutate(diff = trim - reg,
+         reg_rank = rank(-reg),
+         trim_rank = rank(-trim, ties.method = "min")) |>
+  arrange(desc(trim))
+```
 
 
 
