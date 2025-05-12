@@ -223,14 +223,14 @@ team_game_margins |>
     ## # A tibble: 30 × 6
     ##    team                    reg  trim    diff reg_rank trim_rank
     ##    <chr>                 <dbl> <dbl>   <dbl>    <dbl>     <int>
-    ##  1 Detroit Tigers        1.92  1.84  -0.0813        1         1
-    ##  2 New York Yankees      1.92  1.69  -0.234         2         2
-    ##  3 Los Angeles Dodgers   1.27  1.34   0.0688        6         3
-    ##  4 New York Mets         1.58  1.34  -0.231         3         3
-    ##  5 San Diego Padres      1.42  1.22  -0.202         4         5
-    ##  6 Chicago Cubs          1.35  1     -0.35          5         6
-    ##  7 San Francisco Giants  0.718 0.758  0.0396        8         7
-    ##  8 Boston Red Sox        0.659 0.727  0.0687        9         8
-    ##  9 Philadelphia Phillies 0.513 0.636  0.124        12         9
-    ## 10 St. Louis Cardinals   0.475 0.562  0.0875       13        10
+    ##  1 New York Yankees      2.13  1.91  -0.219         1         1
+    ##  2 Detroit Tigers        1.76  1.67  -0.0894        2         2
+    ##  3 Los Angeles Dodgers   1.41  1.52   0.101         4         3
+    ##  4 New York Mets         1.63  1.42  -0.210         3         4
+    ##  5 San Diego Padres      1.23  1     -0.231         5         5
+    ##  6 Chicago Cubs          1.22  0.848 -0.371         6         6
+    ##  7 Philadelphia Phillies 0.575 0.781  0.206        11         7
+    ##  8 Boston Red Sox        0.690 0.765  0.0742        7         8
+    ##  9 St. Louis Cardinals   0.585 0.697  0.112         9         9
+    ## 10 San Francisco Giants  0.675 0.656 -0.0188        8        10
     ## # ℹ 20 more rows
