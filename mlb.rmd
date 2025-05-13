@@ -78,6 +78,21 @@ end_games = end_games_raw |>
 # writing and reading prevents baseballr message
 write_csv(end_games, "data/end_games.csv")
 end_games = read_csv("data/end_games.csv", show_col_types = F)
+
+max_margin = end_games |>
+  mutate(margin = win_score - lose_score,
+         margin_pct = percent_rank(margin)) |>
+  filter(margin_pct > 0.95) |>
+  pull(margin) |>
+  min()
+
+# change this to true to truncate top 5% of win margins
+truncate_blowouts = FALSE
+
+if (truncate_blowouts) {
+  end_games = end_games |>
+    filter(win_score - lose_score <= max_margin)
+}
 ```
 
 ```{r include = F}
@@ -300,7 +315,7 @@ team_pythag = team_scored_allowed |>
   group_by(team) |>
   summarise(scored = sum(scored),
             allowed = sum(allowed)) |>
-  mutate(pythag = round(scored ^ 2 / (scored ^ 2 + allowed ^ 2) * 100, 1))
+  mutate(pythag = round(scored ^ 1.83 / (scored ^ 1.83 + allowed ^ 1.83) * 100, 1))
 
 team_pythag |>
   ggplot(aes(reorder(team, pythag), pythag)) +
@@ -618,36 +633,71 @@ team_diffs |>
        title = glue("Team run differentials as of {better_date(Sys.Date())}"))
 ```
 
-```{r}
-team_scored_allowed |>
-  mutate(game_num = row_number(), .by = "team") |>
-  mutate(group_of_7 = ((game_num - 1) %/% 7) + 1) |>
-  group_by(team, group_of_7) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed),
-            .groups = "drop") |>
-  mutate(py = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
-  ggplot(aes(group_of_7, py)) +
-  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
-  facet_wrap(vars(team), scales = "free_x") +
-  scale_color_manual(values = team_hex) +
-  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5)
-```
 
 
-```{r}
-team_game_margins |>
+
+```{r echo = F}
+team_pythag_small = team_pythag |>
+  transmute(team, pythag = pythag / 100)
+
+end_py = end_games |>
+  inner_join(team_pythag_small, by = c("home_team" = "team")) |>
+  rename(home_pythag = pythag) |>
+  inner_join(team_pythag_small, by = c("away_team" = "team")) |>
+  rename(away_pythag = pythag)
+
+home_opp_py = end_py |>
+  select(date, team = home_team, opp_pythag = away_pythag)
+
+away_opp_py = end_py |>
+  select(date, team = away_team, opp_pythag = home_pythag)
+
+team_opp_py_by_game = bind_rows(home_opp_py, away_opp_py) |>
+  arrange(team, date)
+
+team_opp_py = team_opp_py_by_game |>
   group_by(team) |>
-  summarise(reg = mean(margin),
-            trim = mean(margin, trim = 0.1)) |>
-  mutate(diff = trim - reg,
-         reg_rank = rank(-reg),
-         trim_rank = rank(-trim, ties.method = "min")) |>
-  arrange(desc(trim))
+  summarise(avg_opp_pythag = round(mean(opp_pythag), 3))
+
+team_pythag_small |>
+  inner_join(team_opp_py, by = "team") |>
+  inner_join(teams_info, by = "team") |>
+  ggplot(aes(avg_opp_pythag, pythag)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  labs(x = "Avg. Opponent Pythagorean Win Percentage",
+       y = "Pythagorean Win Percentage",
+       title = glue("Performance by Strength of Schedule as of {better_date(Sys.Date())}")) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.01), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
 ```
 
 
+```{r}
+margin_limit = 10
 
+home_sa = end_games |>
+  filter(win_score - lose_score <= margin_limit) |>
+  select(date, team = home_team, scored = home_score, allowed = away_score)
+
+away_sa = end_games |>
+  filter(win_score - lose_score <= margin_limit) |>
+  select(date, team = away_team, scored = away_score, allowed = home_score)
+
+team_adj_pythag = bind_rows(home_sa, away_sa) |>
+  group_by(team) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed)) |>
+  transmute(team, adj_pythag = round(scored ** 1.83 / (scored ** 1.83 + allowed ** 1.83), 3))
+
+team_pythag_small |>
+  inner_join(team_adj_pythag, by = "team") |>
+  mutate(raw_benefit = round(pythag - adj_pythag, 3)) |>
+  arrange(desc(raw_benefit))
+```
 
 
 

@@ -191,46 +191,42 @@ team_runs_avg_sd |>
 
 ![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
-``` r
-team_scored_allowed |>
-  mutate(game_num = row_number(), .by = "team") |>
-  mutate(group_of_7 = ((game_num - 1) %/% 7) + 1) |>
-  group_by(team, group_of_7) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed),
-            .groups = "drop") |>
-  mutate(py = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
-  ggplot(aes(group_of_7, py)) +
-  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
-  facet_wrap(vars(team), scales = "free_x") +
-  scale_color_manual(values = team_hex) +
-  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5)
-```
-
 ![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
-team_game_margins |>
+margin_limit = 10
+
+home_sa = end_games |>
+  filter(win_score - lose_score <= margin_limit) |>
+  select(date, team = home_team, scored = home_score, allowed = away_score)
+
+away_sa = end_games |>
+  filter(win_score - lose_score <= margin_limit) |>
+  select(date, team = away_team, scored = away_score, allowed = home_score)
+
+team_adj_pythag = bind_rows(home_sa, away_sa) |>
   group_by(team) |>
-  summarise(reg = mean(margin),
-            trim = mean(margin, trim = 0.1)) |>
-  mutate(diff = trim - reg,
-         reg_rank = rank(-reg),
-         trim_rank = rank(-trim, ties.method = "min")) |>
-  arrange(desc(trim))
+  summarise(scored = sum(scored),
+            allowed = sum(allowed)) |>
+  transmute(team, adj_pythag = round(scored ** 1.83 / (scored ** 1.83 + allowed ** 1.83), 3))
+
+team_pythag_small |>
+  inner_join(team_adj_pythag, by = "team") |>
+  mutate(raw_benefit = round(pythag - adj_pythag, 3)) |>
+  arrange(desc(raw_benefit))
 ```
 
-    ## # A tibble: 30 × 6
-    ##    team                    reg  trim    diff reg_rank trim_rank
-    ##    <chr>                 <dbl> <dbl>   <dbl>    <dbl>     <int>
-    ##  1 New York Yankees      2.13  1.91  -0.219         1         1
-    ##  2 Detroit Tigers        1.76  1.67  -0.0894        2         2
-    ##  3 Los Angeles Dodgers   1.41  1.52   0.101         4         3
-    ##  4 New York Mets         1.63  1.42  -0.210         3         4
-    ##  5 San Diego Padres      1.23  1     -0.231         5         5
-    ##  6 Chicago Cubs          1.22  0.848 -0.371         6         6
-    ##  7 Philadelphia Phillies 0.575 0.781  0.206        11         7
-    ##  8 Boston Red Sox        0.690 0.765  0.0742        7         8
-    ##  9 St. Louis Cardinals   0.585 0.697  0.112         9         9
-    ## 10 San Francisco Giants  0.675 0.656 -0.0188        8        10
+    ## # A tibble: 30 × 4
+    ##    team              pythag adj_pythag raw_benefit
+    ##    <chr>              <dbl>      <dbl>       <dbl>
+    ##  1 Cincinnati Reds    0.559      0.475       0.084
+    ##  2 Seattle Mariners   0.526      0.461       0.065
+    ##  3 Chicago Cubs       0.613      0.552       0.061
+    ##  4 San Diego Padres   0.622      0.569       0.053
+    ##  5 Milwaukee Brewers  0.495      0.444       0.051
+    ##  6 Tampa Bay Rays     0.473      0.425       0.048
+    ##  7 Detroit Tigers     0.699      0.657       0.042
+    ##  8 Houston Astros     0.559      0.528       0.031
+    ##  9 New York Yankees   0.696      0.666       0.03 
+    ## 10 New York Mets      0.678      0.654       0.024
     ## # ℹ 20 more rows
