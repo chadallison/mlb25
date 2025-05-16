@@ -219,14 +219,14 @@ team_pythag_small |>
     ## # A tibble: 30 × 4
     ##    team              pythag adj_pythag raw_benefit
     ##    <chr>              <dbl>      <dbl>       <dbl>
-    ##  1 Cincinnati Reds    0.543      0.46        0.083
+    ##  1 Cincinnati Reds    0.556      0.476       0.08 
     ##  2 Seattle Mariners   0.526      0.462       0.064
     ##  3 Chicago Cubs       0.608      0.548       0.06 
     ##  4 San Diego Padres   0.632      0.582       0.05 
     ##  5 Milwaukee Brewers  0.5        0.452       0.048
-    ##  6 Tampa Bay Rays     0.475      0.431       0.044
+    ##  6 Tampa Bay Rays     0.489      0.447       0.042
     ##  7 Detroit Tigers     0.689      0.649       0.04 
-    ##  8 Houston Astros     0.563      0.533       0.03 
+    ##  8 Houston Astros     0.56       0.53        0.03 
     ##  9 New York Yankees   0.692      0.663       0.029
     ## 10 New York Mets      0.668      0.643       0.025
     ## # ℹ 20 more rows
