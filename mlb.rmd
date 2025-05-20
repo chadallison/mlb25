@@ -676,28 +676,6 @@ team_pythag_small |>
 ```
 
 
-```{r}
-margin_limit = 10
-
-home_sa = end_games |>
-  filter(win_score - lose_score <= margin_limit) |>
-  select(date, team = home_team, scored = home_score, allowed = away_score)
-
-away_sa = end_games |>
-  filter(win_score - lose_score <= margin_limit) |>
-  select(date, team = away_team, scored = away_score, allowed = home_score)
-
-team_adj_pythag = bind_rows(home_sa, away_sa) |>
-  group_by(team) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed)) |>
-  transmute(team, adj_pythag = round(scored ** 1.83 / (scored ** 1.83 + allowed ** 1.83), 3))
-
-team_pythag_small |>
-  inner_join(team_adj_pythag, by = "team") |>
-  mutate(raw_benefit = round(pythag - adj_pythag, 3)) |>
-  arrange(desc(raw_benefit))
-```
 
 
 
