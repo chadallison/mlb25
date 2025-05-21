@@ -640,29 +640,36 @@ team_diffs |>
 team_pythag_small = team_pythag |>
   transmute(team, pythag = pythag / 100)
 
-end_py = end_games |>
-  inner_join(team_pythag_small, by = c("home_team" = "team")) |>
-  rename(home_pythag = pythag) |>
-  inner_join(team_pythag_small, by = c("away_team" = "team")) |>
-  rename(away_pythag = pythag)
-
-home_opp_py = end_py |>
-  select(date, team = home_team, opp_pythag = away_pythag)
-
-away_opp_py = end_py |>
-  select(date, team = away_team, opp_pythag = home_pythag)
-
-team_opp_py_by_game = bind_rows(home_opp_py, away_opp_py) |>
-  arrange(team, date)
-
-team_opp_py = team_opp_py_by_game |>
+team_sa = team_scored_allowed |>
   group_by(team) |>
-  summarise(avg_opp_pythag = round(mean(opp_pythag), 3))
+  summarise(scored = sum(scored),
+            allowed = sum(allowed))
+
+temp = end_games |>
+  select(home_team, away_team, home_score, away_score) |>
+  inner_join(team_sa, by = c("home_team" = "team")) |>
+  rename(home_scored = scored, home_allowed = allowed) |>
+  inner_join(team_sa, by = c("away_team" = "team")) |>
+  rename(away_scored = scored, away_allowed = allowed)
+
+team_opp_py = temp |>
+  group_by(team = home_team) |>
+  summarise(opp_scored = sum(away_scored),
+            opp_allowed = sum(away_allowed)) |>
+  bind_rows(temp |>
+  group_by(team = away_team) |>
+  summarise(opp_scored = sum(home_scored),
+            opp_allowed = sum(home_allowed))) |>
+  group_by(team) |>
+  summarise(opp_scored = sum(opp_scored),
+            opp_allowed = sum(opp_allowed)) |>
+  mutate(opp_py = opp_scored ^ 2 / (opp_scored ^ 2 + opp_allowed ^ 2)) |>
+  select(team, opp_py)
 
 team_pythag_small |>
   inner_join(team_opp_py, by = "team") |>
   inner_join(teams_info, by = "team") |>
-  ggplot(aes(avg_opp_pythag, pythag)) +
+  ggplot(aes(opp_py, pythag)) +
   geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
   geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
   geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
