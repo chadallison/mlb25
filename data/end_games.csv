@@ -699,6 +699,7 @@ date,game_pk,away_score,away_team,home_team,home_score,win_team,lose_team,win_sc
 2025-05-19,777863,7,Chicago Cubs,Miami Marlins,8,Miami Marlins,Chicago Cubs,8,7
 2025-05-19,777856,1,New York Mets,Boston Red Sox,3,Boston Red Sox,New York Mets,3,1
 2025-05-19,777858,4,Houston Astros,Tampa Bay Rays,3,Houston Astros,Tampa Bay Rays,4,3
+2025-05-19,777861,5,Cleveland Guardians,Minnesota Twins,6,Minnesota Twins,Cleveland Guardians,6,5
 2025-05-19,777857,5,Seattle Mariners,Chicago White Sox,1,Seattle Mariners,Chicago White Sox,5,1
 2025-05-19,777860,4,Baltimore Orioles,Milwaukee Brewers,5,Milwaukee Brewers,Baltimore Orioles,5,4
 2025-05-19,777862,4,Detroit Tigers,St. Louis Cardinals,11,St. Louis Cardinals,Detroit Tigers,11,4
@@ -720,3 +721,18 @@ date,game_pk,away_score,away_team,home_team,home_score,win_team,lose_team,win_sc
 2025-05-20,777836,2,Kansas City Royals,San Francisco Giants,3,San Francisco Giants,Kansas City Royals,3,2
 2025-05-20,777843,7,Los Angeles Angels,Athletics,5,Los Angeles Angels,Athletics,7,5
 2025-05-20,777838,3,Arizona Diamondbacks,Los Angeles Dodgers,4,Los Angeles Dodgers,Arizona Diamondbacks,4,3
+2025-05-21,777834,1,Cincinnati Reds,Pittsburgh Pirates,3,Pittsburgh Pirates,Cincinnati Reds,3,1
+2025-05-21,777832,4,Houston Astros,Tampa Bay Rays,8,Tampa Bay Rays,Houston Astros,8,4
+2025-05-21,777861,5,Cleveland Guardians,Minnesota Twins,6,Minnesota Twins,Cleveland Guardians,6,5
+2025-05-21,777833,2,Chicago Cubs,Miami Marlins,1,Chicago Cubs,Miami Marlins,2,1
+2025-05-21,777826,8,Baltimore Orioles,Milwaukee Brewers,4,Baltimore Orioles,Milwaukee Brewers,8,4
+2025-05-21,777827,5,Detroit Tigers,St. Louis Cardinals,1,Detroit Tigers,St. Louis Cardinals,5,1
+2025-05-21,777830,6,Seattle Mariners,Chicago White Sox,5,Seattle Mariners,Chicago White Sox,6,5
+2025-05-21,777819,8,Kansas City Royals,San Francisco Giants,4,Kansas City Royals,San Francisco Giants,8,4
+2025-05-21,777829,5,Cleveland Guardians,Minnesota Twins,1,Cleveland Guardians,Minnesota Twins,5,1
+2025-05-21,777831,5,New York Mets,Boston Red Sox,1,New York Mets,Boston Red Sox,5,1
+2025-05-21,777835,3,Texas Rangers,New York Yankees,4,New York Yankees,Texas Rangers,4,3
+2025-05-21,777837,0,San Diego Padres,Toronto Blue Jays,14,Toronto Blue Jays,San Diego Padres,14,0
+2025-05-21,777823,9,Philadelphia Phillies,Colorado Rockies,5,Philadelphia Phillies,Colorado Rockies,9,5
+2025-05-21,777828,10,Los Angeles Angels,Athletics,5,Los Angeles Angels,Athletics,10,5
+2025-05-21,777824,1,Arizona Diamondbacks,Los Angeles Dodgers,3,Los Angeles Dodgers,Arizona Diamondbacks,3,1
