@@ -134,6 +134,8 @@ teams_info = data.frame(team = all_teams, abb = team_abbrevs, hex = team_hex)
 better_date = function(dt) {
   return(paste0(month(dt, label = T, abbr = F), " ", day(dt), ", ", year(dt)))
 }
+
+today_nice = better_date(Sys.Date())
 ```
 
 ### Team Standings
@@ -195,7 +197,7 @@ team_rspg_rapg |>
   scale_color_manual(values = team_hex) +
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
   labs(x = "Runs Scored per Game", y = "Runs Allowed Per Game",
-       title = glue("Team Runs Scored/Allowed per Game as of {better_date(Sys.Date())}")) +
+       title = glue("Team Runs Scored/Allowed per Game as of {today_nice}")) +
   scale_x_continuous(breaks = seq(0, 15, by = 1)) +
   scale_y_continuous(breaks = seq(0, 15, by = 1))
 ```
@@ -243,7 +245,7 @@ team_npr |>
   scale_y_continuous(breaks = seq(-3, 3, by = 0.25)) +
   coord_flip(ylim = c(min(team_npr$ovr_npr) * 1.05, max(team_npr$ovr_npr) * 1.05)) +
   labs(x = NULL, y = "Overall NPR",
-       title = glue("Team NPR standings as of {better_date(Sys.Date())}"))
+       title = glue("Team NPR standings as of {today_nice}"))
 ```
 
 **What is NPR?**
@@ -270,7 +272,7 @@ team_npr |>
   geom_vline(xintercept = 0, linetype = "dashed", alpha = 0.5) +
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
   labs(x = "Offensive NPR", y = "Defensive NPR",
-       title = glue("Team offensive/defensive NPR as of {better_date(Sys.Date())}")) +
+       title = glue("Team offensive/defensive NPR as of {today_nice}")) +
   scale_x_continuous(breaks = seq(-3, 3, by = 0.25)) +
   scale_y_continuous(breaks = seq(-3, 3, by = 0.25))
 ```
@@ -302,7 +304,7 @@ team_game_margins |>
   coord_flip() +
   scale_fill_manual(values = team_hex) +
   labs(x = NULL, y = "Avg. run differential",
-       title = glue("Team avg. run differentials as of {better_date(Sys.Date())}")) +
+       title = glue("Team avg. run differentials as of {today_nice}")) +
   scale_y_continuous(breaks = seq(-10, 10, by = 1))
 ```
 
@@ -324,7 +326,7 @@ team_pythag |>
   scale_fill_manual(values = team_hex) +
   geom_text(aes(label = paste0(pythag, "%")), size = 3, hjust = -0.15) +
   labs(x = NULL, y = "Pythagorean Win Percentage",
-       title = glue("Team pythagorean win percentages as of {better_date(Sys.Date())}")) +
+       title = glue("Team pythagorean win percentages as of {today_nice}")) +
   scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1))
 ```
 
@@ -382,7 +384,7 @@ team_wl_streaks |>
   scale_fill_manual(values = team_hex) +
   scale_y_continuous(breaks = seq(-25, 25, by = 1)) +
   labs(x = NULL, y = "Winning/Losing Streak",
-       title = glue("Team winning/losing streaks as of {better_date(Sys.Date())}"))
+       title = glue("Team winning/losing streaks as of {today_nice}"))
 ```
 
 ___
@@ -426,7 +428,7 @@ home_wl |>
   geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
   scale_color_manual(values = team_hex) +
   labs(x = "Home Win Percentage", y = "Away Win Percentage",
-       title = glue("Home and away win percentages as of {better_date(Sys.Date())}")) +
+       title = glue("Home and away win percentages as of {today_nice}")) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent) +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent)
 ```
@@ -511,7 +513,7 @@ above_below_500_res |>
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
   labs(x = "Win Percentage vs. Above .500 Teams",
        y = "Win Percentage vs. Below .500 Teams",
-       title = glue("Win percentages vs. above/below .500 teams as of {better_date(Sys.Date())}")) +
+       title = glue("Win percentages vs. above/below .500 teams as of {today_nice}")) +
   scale_x_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1)) +
   scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1))
 ```
@@ -539,7 +541,7 @@ above_500_cnt_pct |>
   scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1)) +
   labs(x = "Games played against .500 or better teams",
        y = "Win percentage vs. .500 or better teams",
-       title = glue("Performance against .500 or better teams as of {better_date(Sys.Date())}"))
+       title = glue("Performance against .500 or better teams as of {today_nice}"))
 ```
 
 ___
@@ -630,7 +632,7 @@ team_diffs |>
   geom_text(aes(label = pl), size = 3, hjust = -0.25) +
   geom_text(aes(label = nl), size = 3, hjust = 1.25) +
   labs(x = NULL, y = "Run Differential",
-       title = glue("Team run differentials as of {better_date(Sys.Date())}"))
+       title = glue("Team run differentials as of {today_nice}"))
 ```
 
 
@@ -677,7 +679,7 @@ team_pythag_small |>
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
   labs(x = "Avg. Opponent Pythagorean Win Percentage",
        y = "Pythagorean Win Percentage",
-       title = glue("Performance by Strength of Schedule as of {better_date(Sys.Date())}")) +
+       title = glue("Performance by Strength of Schedule as of {today_nice}")) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.01), labels = scales::percent) +
   scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
 ```
