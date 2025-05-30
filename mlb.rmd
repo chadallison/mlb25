@@ -235,8 +235,8 @@ team_npr = team_npr_by_game |>
             ovr_npr = off_npr + def_npr)
 
 team_npr |>
-  mutate(pl = ifelse(ovr_npr >= 0, ovr_npr, ""),
-         nl = ifelse(ovr_npr < 0, ovr_npr, "")) |>
+  mutate(pl = ifelse(ovr_npr >= 0, round(ovr_npr, 3), ""),
+         nl = ifelse(ovr_npr < 0, round(ovr_npr, 3), "")) |>
   ggplot(aes(reorder(team, ovr_npr), ovr_npr)) +
   geom_col(aes(fill = team), show.legend = F) +
   geom_text(aes(label = pl), size = 3, hjust = -0.25) +
