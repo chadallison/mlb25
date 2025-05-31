@@ -26,6 +26,9 @@ out on GitHub:
 - [Performance Against Teams with Winning
   Record](#performance-against-teams-with-winning-record)
 - [NPR Trends](#npr-trends)
+- [Runs Scored and Volatility](#runs-scored-and-volatility)
+- [Performance by Strength of
+  Schedule](#performance-by-strength-of-schedule)
 
 ------------------------------------------------------------------------
 
@@ -156,39 +159,14 @@ interpretability.
 
 ------------------------------------------------------------------------
 
-``` r
-team_runs_scored_by_game = end_games |>
-  select(date, team = home_team, runs = home_score) |>
-  rbind(end_games |>
-  select(date, team = away_team, runs = away_score)) |>
-  arrange(team, date)
-
-team_runs_avg_sd = team_runs_scored_by_game |>
-  group_by(team) |>
-  summarise(avg = mean(runs, trim = 0.1),
-            sd = sd(runs)) |>
-  mutate(lb = avg - sd,
-         ub = avg + sd,
-         range = ub - lb)
-
-team_runs_avg_sd |>
-  inner_join(teams_info, by = "team") |>
-  ggplot(aes(avg, sd)) +
-  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
-  geom_line(stat = "smooth", method = "lm", formula = y ~ x, linetype = "dashed", alpha = 0.5) +
-  geom_vline(xintercept = mean(team_runs_avg_sd$avg), linetype = "dashed", alpha = 0.25) +
-  geom_hline(yintercept = mean(team_runs_avg_sd$sd), linetype = "dashed", alpha = 0.25) +
-  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 32) +
-  scale_color_manual(values = team_hex) +
-  scale_x_continuous(breaks = seq(0, 10, by = 0.5)) +
-  scale_y_continuous(breaks = seq(0, 10, by = 0.5)) +
-  labs(x = "Avg. Runs Scored", y = "Runs Scored Volatility (SD)",
-       title = "Team runs scored vs. volatility",
-       subtitle = "Middle 80% of values -- upper & lower 10% (per team) excluded")
-```
+### Runs Scored and Volatility
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
+------------------------------------------------------------------------
+
+### Performance by Strength of Schedule
+
 ![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+------------------------------------------------------------------------

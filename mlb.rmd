@@ -24,6 +24,8 @@ ___
 - [Records Against Teams with Winning vs Losing Records]
 - [Performance Against Teams with Winning Record]
 - [NPR Trends]
+- [Runs Scored and Volatility]
+- [Performance by Strength of Schedule]
 
 ___
 
@@ -581,8 +583,9 @@ team_npr_deltas |>
 
 ___
 
+### Runs Scored and Volatility
 
-```{r}
+```{r echo = F}
 team_runs_scored_by_game = end_games |>
   select(date, team = home_team, runs = home_score) |>
   rbind(end_games |>
@@ -613,30 +616,9 @@ team_runs_avg_sd |>
        subtitle = "Middle 80% of values -- upper & lower 10% (per team) excluded")
 ```
 
-```{r echo = F}
-team_diffs = team_scored_allowed |>
-  group_by(team) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed)) |>
-  mutate(diff = scored - allowed,
-         pl = ifelse(diff >= 0, diff, ""),
-         nl = ifelse(diff < 0, diff, "")) |>
-  inner_join(teams_info, by = "team")
+___
 
-team_diffs |>
-  ggplot(aes(reorder(team, diff), diff)) +
-  geom_col(aes(fill = team), show.legend = F) +
-  coord_flip(ylim = c(min(team_diffs$diff) * 1.05, max(team_diffs$diff) * 1.05)) +
-  scale_fill_manual(values = team_hex) +
-  scale_y_continuous(breaks = seq(-500, 500, by = 25)) +
-  geom_text(aes(label = pl), size = 3, hjust = -0.25) +
-  geom_text(aes(label = nl), size = 3, hjust = 1.25) +
-  labs(x = NULL, y = "Run Differential",
-       title = glue("Team run differentials as of {today_nice}"))
-```
-
-
-
+### Performance by Strength of Schedule
 
 ```{r echo = F}
 team_pythag_small = team_pythag |>
@@ -684,6 +666,7 @@ team_pythag_small |>
   scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
 ```
 
+___
 
 
 
