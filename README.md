@@ -29,6 +29,7 @@ out on GitHub:
 - [Runs Scored and Volatility](#runs-scored-and-volatility)
 - [Performance by Strength of
   Schedule](#performance-by-strength-of-schedule)
+- [One Run Games](#one-run-games)
 
 ------------------------------------------------------------------------
 
@@ -168,5 +169,11 @@ interpretability.
 ### Performance by Strength of Schedule
 
 ![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### One Run Games
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ------------------------------------------------------------------------
