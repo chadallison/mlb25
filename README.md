@@ -30,6 +30,7 @@ out on GitHub:
 - [Performance by Strength of
   Schedule](#performance-by-strength-of-schedule)
 - [One Run Games](#one-run-games)
+- [Pythagorean Wins in Last Seven](#pythagorean-wins-in-last-seven)
 
 ------------------------------------------------------------------------
 
@@ -175,5 +176,11 @@ interpretability.
 ### One Run Games
 
 ![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Pythagorean Wins in Last Seven
+
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 ------------------------------------------------------------------------

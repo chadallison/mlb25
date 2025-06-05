@@ -27,6 +27,7 @@ ___
 - [Runs Scored and Volatility]
 - [Performance by Strength of Schedule]
 - [One Run Games]
+- [Pythagorean Wins in Last Seven]
 
 ___
 
@@ -700,8 +701,37 @@ one_run_records |>
 
 ___
 
+### Pythagorean Wins in Last Seven
 
+```{r echo = F}
+team_scored_allowed |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         gp = max(game_num),
+         .by = "team") |>
+  mutate(last7 = ifelse(game_num > gp - 7, 1, 0)) |>
+  filter(last7 == 1) |>
+  group_by(team) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed)) |>
+  transmute(team,
+            py7 = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
+  inner_join(team_pythag_small, by = "team") |>
+  inner_join(teams_info, by = "team") |>
+  ggplot(aes(pythag, py7)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  labs(x = "Overall Pythagorean Win Percentage",
+       y = "Pythagorean Win Percentage in Last 7 Games",
+       title = "Pythagorean Win Percentage: Last 7 Games vs. Full Season") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent)
+```
 
+___
 
 
 
