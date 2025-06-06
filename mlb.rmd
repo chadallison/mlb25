@@ -733,6 +733,24 @@ team_scored_allowed |>
 
 ___
 
+### Biggest Pythagorean Changes in Last 25
+
+```{r}
+team_scored_allowed |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         games_played = n(),
+         .by = "team") |>
+  filter(game_num < games_played - 25) |>
+  group_by(team) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed)) |>
+  transmute(team, py_prev = round(scored ^ 2 / (scored ^ 2 + allowed ^ 2), 3)) |>
+  inner_join(team_pythag_small, by = "team") |>
+  inner_join(teams_info, by = "team") |>
+  mutate(diff = pythag - py_prev) |>
+  arrange(desc(diff))
+```
 
 
 
