@@ -201,20 +201,21 @@ team_scored_allowed |>
   inner_join(team_pythag_small, by = "team") |>
   inner_join(teams_info, by = "team") |>
   mutate(diff = pythag - py_prev) |>
-  arrange(desc(diff))
+  arrange(desc(diff)) |>
+  ggplot(aes(py_prev, pythag)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_line(stat = "smooth", method = "lm", formula = y ~ x, linetype = "dashed", alpha = 0.5) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.25) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.25) +
+  # geom_abline(linetype = "solid", col = "red") +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  labs(x = "Pythagorean Wins as of 25 Games Ago",
+       y = "Current Pythagorean Wins",
+       title = "Pythagorean Movement in Past 25 Games",
+       subtitle = "Teams above dashed line have improved in their last 25 relative to other teams") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
 ```
 
-    ## # A tibble: 30 × 6
-    ##    team                py_prev pythag abb   hex       diff
-    ##    <chr>                 <dbl>  <dbl> <chr> <chr>    <dbl>
-    ##  1 Toronto Blue Jays     0.369  0.498 TOR   #134A8E 0.129 
-    ##  2 Tampa Bay Rays        0.471  0.587 TB    #8FBCE6 0.116 
-    ##  3 Los Angeles Angels    0.323  0.409 LAA   #BA0021 0.086 
-    ##  4 Baltimore Orioles     0.308  0.359 BAL   #DF4601 0.051 
-    ##  5 Texas Rangers         0.443  0.494 TEX   #C0111F 0.051 
-    ##  6 Pittsburgh Pirates    0.325  0.375 PIT   #FDB827 0.05  
-    ##  7 St. Louis Cardinals   0.503  0.543 STL   #C41E3A 0.0400
-    ##  8 Miami Marlins         0.345  0.367 MIA   #00A3E0 0.0220
-    ##  9 Minnesota Twins       0.554  0.575 MIN   #D31145 0.0210
-    ## 10 Cleveland Guardians   0.449  0.468 CLE   #0C2340 0.0190
-    ## # ℹ 20 more rows
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->

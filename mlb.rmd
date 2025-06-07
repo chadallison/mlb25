@@ -749,7 +749,21 @@ team_scored_allowed |>
   inner_join(team_pythag_small, by = "team") |>
   inner_join(teams_info, by = "team") |>
   mutate(diff = pythag - py_prev) |>
-  arrange(desc(diff))
+  arrange(desc(diff)) |>
+  ggplot(aes(py_prev, pythag)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  geom_line(stat = "smooth", method = "lm", formula = y ~ x, linetype = "dashed", alpha = 0.5) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.25) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.25) +
+  # geom_abline(linetype = "solid", col = "red") +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  labs(x = "Pythagorean Wins as of 25 Games Ago",
+       y = "Current Pythagorean Wins",
+       title = "Pythagorean Movement in Past 25 Games",
+       subtitle = "Teams above dashed line have improved in their last 25 relative to other teams") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
 ```
 
 
