@@ -934,6 +934,7 @@ date,game_pk,away_score,away_team,home_team,home_score,win_team,lose_team,win_sc
 2025-06-06,777621,4,Philadelphia Phillies,Pittsburgh Pirates,5,Pittsburgh Pirates,Philadelphia Phillies,5,4
 2025-06-06,777624,0,Texas Rangers,Washington Nationals,2,Washington Nationals,Texas Rangers,2,0
 2025-06-06,777627,6,Boston Red Sox,New York Yankees,9,New York Yankees,Boston Red Sox,9,6
+2025-06-06,777623,3,Arizona Diamondbacks,Cincinnati Reds,4,Cincinnati Reds,Arizona Diamondbacks,4,3
 2025-06-06,777626,1,Chicago Cubs,Detroit Tigers,3,Detroit Tigers,Chicago Cubs,3,1
 2025-06-06,777622,4,Houston Astros,Cleveland Guardians,2,Houston Astros,Cleveland Guardians,4,2
 2025-06-06,777618,2,Kansas City Royals,Chicago White Sox,7,Chicago White Sox,Kansas City Royals,7,2
@@ -944,3 +945,19 @@ date,game_pk,away_score,away_team,home_team,home_score,win_team,lose_team,win_sc
 2025-06-06,777614,4,Seattle Mariners,Los Angeles Angels,5,Los Angeles Angels,Seattle Mariners,5,4
 2025-06-06,777613,4,Baltimore Orioles,Athletics,5,Athletics,Baltimore Orioles,5,4
 2025-06-06,777619,4,Atlanta Braves,San Francisco Giants,5,San Francisco Giants,Atlanta Braves,5,4
+2025-06-07,777609,6,Chicago Cubs,Detroit Tigers,1,Chicago Cubs,Detroit Tigers,6,1
+2025-06-07,777623,3,Arizona Diamondbacks,Cincinnati Reds,4,Cincinnati Reds,Arizona Diamondbacks,4,3
+2025-06-07,777600,5,Toronto Blue Jays,Minnesota Twins,4,Toronto Blue Jays,Minnesota Twins,5,4
+2025-06-07,777601,1,Los Angeles Dodgers,St. Louis Cardinals,2,St. Louis Cardinals,Los Angeles Dodgers,2,1
+2025-06-07,777610,5,Texas Rangers,Washington Nationals,0,Texas Rangers,Washington Nationals,5,0
+2025-06-07,777607,1,Philadelphia Phillies,Pittsburgh Pirates,2,Pittsburgh Pirates,Philadelphia Phillies,2,1
+2025-06-07,777598,2,Atlanta Braves,San Francisco Giants,3,San Francisco Giants,Atlanta Braves,3,2
+2025-06-07,777612,1,Arizona Diamondbacks,Cincinnati Reds,13,Cincinnati Reds,Arizona Diamondbacks,13,1
+2025-06-07,777608,5,Houston Astros,Cleveland Guardians,3,Houston Astros,Cleveland Guardians,5,3
+2025-06-07,777606,1,Kansas City Royals,Chicago White Sox,4,Chicago White Sox,Kansas City Royals,4,1
+2025-06-07,777611,11,Miami Marlins,Tampa Bay Rays,10,Miami Marlins,Tampa Bay Rays,11,10
+2025-06-07,777605,10,Boston Red Sox,New York Yankees,7,Boston Red Sox,New York Yankees,10,7
+2025-06-07,777597,3,San Diego Padres,Milwaukee Brewers,4,Milwaukee Brewers,San Diego Padres,4,3
+2025-06-07,777603,6,Seattle Mariners,Los Angeles Angels,8,Los Angeles Angels,Seattle Mariners,8,6
+2025-06-07,777604,8,New York Mets,Colorado Rockies,1,New York Mets,Colorado Rockies,8,1
+2025-06-07,777599,7,Baltimore Orioles,Athletics,4,Baltimore Orioles,Athletics,7,4
