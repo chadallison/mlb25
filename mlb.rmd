@@ -722,6 +722,7 @@ team_scored_allowed |>
   geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
   geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
   geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_abline(linetype = "dashed", alpha = 0.5) +
   scale_color_manual(values = team_hex) +
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
   labs(x = "Overall Pythagorean Win Percentage",
@@ -767,6 +768,9 @@ team_scored_allowed |>
 ```
 
 
+```{r}
+
+```
 
 
 
