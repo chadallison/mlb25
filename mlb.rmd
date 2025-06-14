@@ -768,9 +768,6 @@ team_scored_allowed |>
 ```
 
 
-```{r}
-
-```
 
 
 
