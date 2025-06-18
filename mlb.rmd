@@ -94,8 +94,7 @@ max_margin = end_games |>
 truncate_blowouts = FALSE
 
 if (truncate_blowouts) {
-  end_games = end_games |>
-    filter(win_score - lose_score <= max_margin)
+  end_games = end_games |> filter(win_score - lose_score <= max_margin)
 }
 ```
 
@@ -110,7 +109,6 @@ team_abbrevs =  c(
   "SEA", "STL", "TB", "TEX", "TOR", "WSH"
 )
 
-
 team_hex = c(
   "#A71930", "#003831", "#CE1141", "#DF4601", "#BD3039", "#0E3386",
   "#27251F", "#C6011F", "#0C2340", "#33006F", "#FA4616", "#EB6E1F",
@@ -118,7 +116,6 @@ team_hex = c(
   "#002D72", "#003087", "#E81828", "#FDB827", "#2F241D", "#FD5A1E",
   "#0C2C56", "#C41E3A", "#8FBCE6", "#C0111F", "#134A8E", "#dcbdd0"
 )
-
 
 divisions <- c(
   "NL West", "AL West", "NL East", "AL East", "AL East", "NL Central",
@@ -128,7 +125,6 @@ divisions <- c(
   "AL West", "NL Central", "AL East", "AL West", "AL East", "NL East"
 )
 
-
 team_divisons = data.frame(team = all_teams, division = divisions) |>
   mutate(division = factor(division, levels = c("AL West", "AL Central", "AL East",
                                                 "NL West", "NL Central", "NL East")))
@@ -136,7 +132,7 @@ team_divisons = data.frame(team = all_teams, division = divisions) |>
 teams_info = data.frame(team = all_teams, abb = team_abbrevs, hex = team_hex)
 
 better_date = function(dt) {
-  return(paste0(month(dt, label = T, abbr = F), " ", day(dt), ", ", year(dt)))
+  return(as.character(glue("{month(dt, label = T, abbr = F)} {day(dt)}, {year(dt)}")))
 }
 
 today_nice = better_date(Sys.Date())
