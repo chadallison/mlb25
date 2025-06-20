@@ -219,29 +219,3 @@ team_scored_allowed |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
-
-``` r
-end_games |>
-  mutate(win_margin = win_score - lose_score) |>
-  group_by(win_margin) |>
-  count(win_team, name = "wins") |>
-  ungroup() |>
-  group_by(win_margin) |>
-  slice_max(wins, n = 1, with_ties = T) |>
-  ungroup()
-```
-
-    ## # A tibble: 35 × 3
-    ##    win_margin win_team               wins
-    ##         <dbl> <chr>                 <int>
-    ##  1          1 San Francisco Giants     17
-    ##  2          2 Boston Red Sox           12
-    ##  3          2 Cleveland Guardians      12
-    ##  4          3 Los Angeles Dodgers      10
-    ##  5          4 Baltimore Orioles         9
-    ##  6          4 Chicago Cubs              9
-    ##  7          5 Philadelphia Phillies     7
-    ##  8          6 Atlanta Braves            6
-    ##  9          7 St. Louis Cardinals       6
-    ## 10          8 Detroit Tigers            3
-    ## # ℹ 25 more rows

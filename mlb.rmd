@@ -764,16 +764,8 @@ team_scored_allowed |>
 ```
 
 
-```{r}
-end_games |>
-  mutate(win_margin = win_score - lose_score) |>
-  group_by(win_margin) |>
-  count(win_team, name = "wins") |>
-  ungroup() |>
-  group_by(win_margin) |>
-  slice_max(wins, n = 1, with_ties = T) |>
-  ungroup()
-```
+
+
 
 
 
