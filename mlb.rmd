@@ -765,6 +765,26 @@ team_scored_allowed |>
 
 
 
+```{r}
+team_names = c()
+model_coefs = c()
+
+for (tm in all_teams) {
+  data = team_scored_allowed |> filter(team == tm)
+  model = lm(allowed ~ scored, data = data)
+  coef = round(model$coefficients[[2]], 3)
+  team_names = append(team_names, tm)
+  model_coefs = append(model_coefs, coef)
+}
+
+res = data.frame(
+  team = team_names,
+  model_coef = model_coefs
+)
+
+res |>
+  arrange(desc(model_coef))
+```
 
 
 

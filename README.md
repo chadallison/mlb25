@@ -219,3 +219,56 @@ team_scored_allowed |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+team_names = c()
+model_coefs = c()
+
+for (tm in all_teams) {
+  data = team_scored_allowed |> filter(team == tm)
+  model = lm(allowed ~ scored, data = data)
+  coef = round(model$coefficients[[2]], 3)
+  team_names = append(team_names, tm)
+  model_coefs = append(model_coefs, coef)
+}
+
+res = data.frame(
+  team = team_names,
+  model_coef = model_coefs
+)
+
+res |>
+  arrange(desc(model_coef))
+```
+
+    ##                     team model_coef
+    ## 1   San Francisco Giants      0.334
+    ## 2   Arizona Diamondbacks      0.282
+    ## 3       Colorado Rockies      0.224
+    ## 4   Washington Nationals      0.217
+    ## 5  Philadelphia Phillies      0.187
+    ## 6          Miami Marlins      0.149
+    ## 7         Boston Red Sox      0.134
+    ## 8       New York Yankees      0.123
+    ## 9    St. Louis Cardinals      0.105
+    ## 10        Tampa Bay Rays      0.086
+    ## 11    Los Angeles Angels      0.080
+    ## 12          Chicago Cubs      0.049
+    ## 13    Pittsburgh Pirates      0.047
+    ## 14       Cincinnati Reds      0.035
+    ## 15        Houston Astros      0.007
+    ## 16      San Diego Padres     -0.003
+    ## 17    Kansas City Royals     -0.008
+    ## 18         New York Mets     -0.009
+    ## 19        Atlanta Braves     -0.020
+    ## 20   Los Angeles Dodgers     -0.030
+    ## 21     Milwaukee Brewers     -0.049
+    ## 22         Texas Rangers     -0.056
+    ## 23      Seattle Mariners     -0.068
+    ## 24   Cleveland Guardians     -0.097
+    ## 25       Minnesota Twins     -0.131
+    ## 26        Detroit Tigers     -0.143
+    ## 27     Toronto Blue Jays     -0.151
+    ## 28     Baltimore Orioles     -0.226
+    ## 29     Chicago White Sox     -0.307
+    ## 30             Athletics     -0.354
