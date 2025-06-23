@@ -242,33 +242,33 @@ res |>
 ```
 
     ##                     team model_coef
-    ## 1   San Francisco Giants      0.334
-    ## 2   Arizona Diamondbacks      0.282
-    ## 3       Colorado Rockies      0.224
-    ## 4   Washington Nationals      0.217
-    ## 5  Philadelphia Phillies      0.187
-    ## 6          Miami Marlins      0.149
-    ## 7         Boston Red Sox      0.134
-    ## 8       New York Yankees      0.123
+    ## 1   San Francisco Giants      0.332
+    ## 2   Arizona Diamondbacks      0.283
+    ## 3   Washington Nationals      0.245
+    ## 4       Colorado Rockies      0.222
+    ## 5  Philadelphia Phillies      0.174
+    ## 6          Miami Marlins      0.145
+    ## 7         Boston Red Sox      0.135
+    ## 8       New York Yankees      0.124
     ## 9    St. Louis Cardinals      0.105
-    ## 10        Tampa Bay Rays      0.086
-    ## 11    Los Angeles Angels      0.080
-    ## 12          Chicago Cubs      0.049
-    ## 13    Pittsburgh Pirates      0.047
-    ## 14       Cincinnati Reds      0.035
-    ## 15        Houston Astros      0.007
-    ## 16      San Diego Padres     -0.003
-    ## 17    Kansas City Royals     -0.008
-    ## 18         New York Mets     -0.009
-    ## 19        Atlanta Braves     -0.020
-    ## 20   Los Angeles Dodgers     -0.030
-    ## 21     Milwaukee Brewers     -0.049
-    ## 22         Texas Rangers     -0.056
-    ## 23      Seattle Mariners     -0.068
-    ## 24   Cleveland Guardians     -0.097
-    ## 25       Minnesota Twins     -0.131
-    ## 26        Detroit Tigers     -0.143
-    ## 27     Toronto Blue Jays     -0.151
-    ## 28     Baltimore Orioles     -0.226
-    ## 29     Chicago White Sox     -0.307
-    ## 30             Athletics     -0.354
+    ## 10    Los Angeles Angels      0.093
+    ## 11        Tampa Bay Rays      0.078
+    ## 12          Chicago Cubs      0.053
+    ## 13       Cincinnati Reds      0.036
+    ## 14    Pittsburgh Pirates      0.035
+    ## 15        Houston Astros      0.023
+    ## 16      San Diego Padres      0.000
+    ## 17    Kansas City Royals     -0.007
+    ## 18   Los Angeles Dodgers     -0.014
+    ## 19        Atlanta Braves     -0.022
+    ## 20         New York Mets     -0.024
+    ## 21     Milwaukee Brewers     -0.033
+    ## 22      Seattle Mariners     -0.040
+    ## 23         Texas Rangers     -0.059
+    ## 24   Cleveland Guardians     -0.090
+    ## 25       Minnesota Twins     -0.102
+    ## 26        Detroit Tigers     -0.145
+    ## 27     Toronto Blue Jays     -0.148
+    ## 28     Baltimore Orioles     -0.221
+    ## 29     Chicago White Sox     -0.309
+    ## 30             Athletics     -0.323
