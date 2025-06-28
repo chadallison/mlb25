@@ -766,6 +766,27 @@ team_scored_allowed |>
 ___
 
 
+```{r}
+dates_scores = end_games |>
+  mutate(score = paste0(win_score, "-", lose_score)) |>
+  select(date, score) |>
+  arrange(date)
+
+scores_most_recent_dates = dates_scores |>
+  group_by(score) |>
+  slice_max(date, n = 1, with_ties = F) |>
+  ungroup() |>
+  rename(most_recent_date = date)
+
+dates_scores |>
+  count(score, name = "cnt") |>
+  separate(score, into = c("win_score", "lose_score"), sep = "-", convert = T, remove = F) |>
+  inner_join(scores_most_recent_dates, by = "score") |>
+  ggplot(aes(win_score, lose_score)) +
+  geom_point(aes(col = cnt), shape = "square", size = 7, show.legend = F) +
+  scale_color_gradient(low = "#93a497", high = "#577a5f") +
+  geom_text(aes(label = cnt), size = 3.5)
+```
 
 
 
