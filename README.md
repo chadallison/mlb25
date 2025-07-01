@@ -30,7 +30,7 @@ out on GitHub:
 - [Performance by Strength of
   Schedule](#performance-by-strength-of-schedule)
 - [One Run Games](#one-run-games)
-- [Pythagorean Wins in Last Seven](#pythagorean-wins-in-last-seven)
+- [Pythagorean Wins in Last Ten](#pythagorean-wins-in-last-ten)
 
 ------------------------------------------------------------------------
 
@@ -179,7 +179,7 @@ interpretability.
 
 ------------------------------------------------------------------------
 
-### Pythagorean Wins in Last Seven
+### Pythagorean Wins in Last Ten
 
 ![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
@@ -221,27 +221,3 @@ team_scored_allowed |>
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ------------------------------------------------------------------------
-
-``` r
-dates_scores = end_games |>
-  mutate(score = paste0(win_score, "-", lose_score)) |>
-  select(date, score) |>
-  arrange(date)
-
-scores_most_recent_dates = dates_scores |>
-  group_by(score) |>
-  slice_max(date, n = 1, with_ties = F) |>
-  ungroup() |>
-  rename(most_recent_date = date)
-
-dates_scores |>
-  count(score, name = "cnt") |>
-  separate(score, into = c("win_score", "lose_score"), sep = "-", convert = T, remove = F) |>
-  inner_join(scores_most_recent_dates, by = "score") |>
-  ggplot(aes(win_score, lose_score)) +
-  geom_point(aes(col = cnt), shape = "square", size = 7, show.legend = F) +
-  scale_color_gradient(low = "#93a497", high = "#577a5f") +
-  geom_text(aes(label = cnt), size = 3.5)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->

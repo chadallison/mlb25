@@ -27,7 +27,7 @@ ___
 - [Runs Scored and Volatility]
 - [Performance by Strength of Schedule]
 - [One Run Games]
-- [Pythagorean Wins in Last Seven]
+- [Pythagorean Wins in Last Ten]
 
 ___
 
@@ -697,7 +697,7 @@ one_run_records |>
 
 ___
 
-### Pythagorean Wins in Last Seven
+### Pythagorean Wins in Last Ten
 
 ```{r echo = F}
 team_scored_allowed |>
@@ -705,7 +705,7 @@ team_scored_allowed |>
   mutate(game_num = row_number(),
          gp = max(game_num),
          .by = "team") |>
-  mutate(last7 = ifelse(game_num > gp - 7, 1, 0)) |>
+  mutate(last7 = ifelse(game_num > gp - 10, 1, 0)) |>
   filter(last7 == 1) |>
   group_by(team) |>
   summarise(scored = sum(scored),
@@ -722,8 +722,8 @@ team_scored_allowed |>
   scale_color_manual(values = team_hex) +
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
   labs(x = "Overall Pythagorean Win Percentage",
-       y = "Pythagorean Win Percentage in Last 7 Games",
-       title = "Pythagorean Win Percentage: Last 7 Games vs. Full Season") +
+       y = "Pythagorean Win Percentage in Last 10 Games",
+       title = "Pythagorean Win Percentage: Last 10 Games vs. Full Season") +
   scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1), labels = scales::percent)
 ```
@@ -766,27 +766,7 @@ team_scored_allowed |>
 ___
 
 
-```{r}
-dates_scores = end_games |>
-  mutate(score = paste0(win_score, "-", lose_score)) |>
-  select(date, score) |>
-  arrange(date)
 
-scores_most_recent_dates = dates_scores |>
-  group_by(score) |>
-  slice_max(date, n = 1, with_ties = F) |>
-  ungroup() |>
-  rename(most_recent_date = date)
-
-dates_scores |>
-  count(score, name = "cnt") |>
-  separate(score, into = c("win_score", "lose_score"), sep = "-", convert = T, remove = F) |>
-  inner_join(scores_most_recent_dates, by = "score") |>
-  ggplot(aes(win_score, lose_score)) +
-  geom_point(aes(col = cnt), shape = "square", size = 7, show.legend = F) +
-  scale_color_gradient(low = "#93a497", high = "#577a5f") +
-  geom_text(aes(label = cnt), size = 3.5)
-```
 
 
 
