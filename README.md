@@ -304,7 +304,22 @@ py_adj_scat |>
        y = "Adjusted Pythagorean Win Percentage",
        title = "Raw vs. adjusted pythagorean wins",
        subtitle = "Teams below/right of dashed line benefitting from blowout wins") +
-  annotate(geom = "text", label = help, x = 0.75, y = 0.25)
+  annotate(
+    geom = "text",
+    label = help,
+    x = max(py_adj_scat$pythag) * 0.9,
+    y = min(py_adj_scat$py_trimmed) * 1.15,
+    size = 3.5,
+    fontface = "italic"
+  ) +
+  annotate(
+    geom = "text",
+    label = hurt,
+    x = min(py_adj_scat$pythag) * 1.25,
+    y = max(py_adj_scat$py_trimmed) * 0.95,
+    size = 3.5,
+    fontface = "italic"
+  )
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
