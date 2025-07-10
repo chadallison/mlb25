@@ -706,7 +706,7 @@ team_scored_allowed |>
          gp = max(game_num),
          .by = "team") |>
   mutate(last7 = ifelse(game_num > gp - 10, 1, 0)) |>
-  filter(last7 == 1) |>
+  filter(last7 == 1 & abs(scored - allowed) <= 10) |>
   group_by(team) |>
   summarise(scored = sum(scored),
             allowed = sum(allowed)) |>
