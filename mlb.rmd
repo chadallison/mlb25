@@ -28,6 +28,9 @@ ___
 - [Performance by Strength of Schedule]
 - [One Run Games]
 - [Pythagorean Wins in Last Ten]
+- [Biggest Pythagorean Changes in Last 25]
+- [Adjusted Pythagorean Wins]
+- [Raw vs Adjusted Pythagorean Wins]
 
 ___
 
@@ -732,7 +735,7 @@ ___
 
 ### Biggest Pythagorean Changes in Last 25
 
-```{r}
+```{r echo = F}
 team_scored_allowed |>
   arrange(team, date) |>
   mutate(game_num = row_number(),
@@ -765,7 +768,9 @@ team_scored_allowed |>
 
 ___
 
-```{r}
+### Adjusted Pythagorean Wins
+
+```{r echo = F}
 end_trimmed = end_games |>
   mutate(margin = win_score - lose_score,
          margin_pct = percent_rank(margin)) |>
@@ -795,8 +800,11 @@ py_trimmed |>
        subtitle = "All games with a top 5% win margin removed")
 ```
 
+___
 
-```{r}
+### Raw vs Adjusted Pythagorean Wins
+
+```{r echo = F}
 py_adj_scat = team_pythag_small |>
   inner_join(py_trimmed, by = "team") |>
   inner_join(teams_info, by = "team")
@@ -847,7 +855,7 @@ py_adj_scat |>
            label.size = 0.5, label.padding = unit(0.4, "lines"))
 ```
 
-
+___
 
 
 

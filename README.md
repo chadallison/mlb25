@@ -31,6 +31,10 @@ out on GitHub:
   Schedule](#performance-by-strength-of-schedule)
 - [One Run Games](#one-run-games)
 - [Pythagorean Wins in Last Ten](#pythagorean-wins-in-last-ten)
+- [Biggest Pythagorean Changes in Last
+  25](#biggest-pythagorean-changes-in-last-25)
+- [Adjusted Pythagorean Wins](#adjusted-pythagorean-wins)
+- [Raw vs Adjusted Pythagorean Wins](#raw-vs-adjusted-pythagorean-wins)
 
 ------------------------------------------------------------------------
 
@@ -187,122 +191,18 @@ interpretability.
 
 ### Biggest Pythagorean Changes in Last 25
 
-``` r
-team_scored_allowed |>
-  arrange(team, date) |>
-  mutate(game_num = row_number(),
-         games_played = n(),
-         .by = "team") |>
-  filter(game_num < games_played - 25) |>
-  group_by(team) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed)) |>
-  transmute(team, py_prev = round(scored ^ 2 / (scored ^ 2 + allowed ^ 2), 3)) |>
-  inner_join(team_pythag_small, by = "team") |>
-  inner_join(teams_info, by = "team") |>
-  mutate(diff = pythag - py_prev) |>
-  arrange(desc(diff)) |>
-  ggplot(aes(py_prev, pythag)) +
-  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
-  geom_line(stat = "smooth", method = "lm", formula = y ~ x, linetype = "dashed", alpha = 0.5) +
-  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.25) +
-  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.25) +
-  # geom_abline(linetype = "solid", col = "red") +
-  scale_color_manual(values = team_hex) +
-  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
-  labs(x = "Pythagorean Wins as of 25 Games Ago",
-       y = "Current Pythagorean Wins",
-       title = "Pythagorean Movement in Past 25 Games",
-       subtitle = "Teams above dashed line have improved in their last 25 relative to other teams") +
-  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
-```
-
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ------------------------------------------------------------------------
 
-``` r
-end_trimmed = end_games |>
-  mutate(margin = win_score - lose_score,
-         margin_pct = percent_rank(margin)) |>
-  slice_min(margin, prop = 0.95, with_ties = T)
-
-py_trimmed = end_trimmed |>
-  select(team = home_team, scored = home_score, allowed = away_score) |>
-  bind_rows(
-    end_trimmed |>
-      select(team = away_team, scored = away_score, allowed = home_score)
-  ) |>
-  group_by(team) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed)) |>
-  mutate(py_trimmed = scored ^ 2 / (scored ^ 2 + allowed ^ 2),
-         lbl = paste0(round(py_trimmed * 100, 1), "%"))
-
-py_trimmed |>
-  ggplot(aes(reorder(team, py_trimmed), py_trimmed)) +
-  geom_col(aes(fill = team), show.legend = F) +
-  coord_flip(ylim = c(0, max(py_trimmed$py_trimmed) * 1.05)) +
-  scale_fill_manual(values = team_hex) +
-  geom_text(aes(label = lbl), size = 3, hjust = -0.25) +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  labs(x = NULL, y = "Adj. Pythagorean Win Percentage",
-       title = "Adjusted pythagorean wins",
-       subtitle = "All games with a top 5% win margin removed")
-```
+### Adjusted Pythagorean Wins
 
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
-``` r
-py_adj_scat = team_pythag_small |>
-  inner_join(py_trimmed, by = "team") |>
-  inner_join(teams_info, by = "team")
+------------------------------------------------------------------------
 
-help = py_adj_scat |>
-  mutate(bb = pythag - py_trimmed,
-         real = paste0(round(pythag * 100, 1), "%")) |>
-  slice_max(bb, n = 3, with_ties = F) |>
-  mutate(desc = as.character(glue("{abb}: {real} real vs. {lbl} adj."))) |>
-  pull(desc) |>
-  paste0(collapse = "\n")
-
-help = paste0("Most helped by blowouts:\n", help)
-
-hurt = py_adj_scat |>
-  mutate(bb = pythag - py_trimmed,
-         real = paste0(round(pythag * 100, 1), "%")) |>
-  slice_min(bb, n = 3, with_ties = F) |>
-  mutate(desc = as.character(glue("{abb}: {real} real vs. {lbl} adj."))) |>
-  pull(desc) |>
-  paste0(collapse = "\n")
-
-hurt = paste0("Most hurt by blowouts:\n", hurt)
-
-py_adj_scat |>
-  ggplot(aes(pythag, py_trimmed)) +
-  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
-  scale_color_manual(values = team_hex) +
-  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
-  geom_vline(xintercept = 0.5, linetype = "dotted", alpha = 0.25) +
-  geom_hline(yintercept = 0.5, linetype = "dotted", alpha = 0.25) +
-  geom_abline(linetype = "dashed", alpha = 0.5) +
-  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  labs(x = "Actual Pythagorean Win Percentage",
-       y = "Adjusted Pythagorean Win Percentage",
-       title = "Raw vs. adjusted pythagorean wins",
-       subtitle = "Teams below/right of dashed line benefitting from blowout wins") +
-  annotate(geom = "label", label = help,
-           x = max(py_adj_scat$pythag) - 0.05,
-           y = min(py_adj_scat$py_trimmed) + 0.05,
-           size = 3.5, fontface = "italic", fill = NA,
-           label.size = 0.5, label.padding = unit(0.4, "lines")) +
-  annotate(geom = "label", label = hurt,
-           x = min(py_adj_scat$pythag) + 0.06,
-           y = max(py_adj_scat$py_trimmed) - 0.05,
-           size = 3.5, fontface = "italic", fill = NA,
-           label.size = 0.5, label.padding = unit(0.4, "lines"))
-```
+### Raw vs Adjusted Pythagorean Wins
 
 ![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+------------------------------------------------------------------------
