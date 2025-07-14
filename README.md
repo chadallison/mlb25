@@ -226,7 +226,7 @@ team_scored_allowed |>
 end_trimmed = end_games |>
   mutate(margin = win_score - lose_score,
          margin_pct = percent_rank(margin)) |>
-  slice_min(margin, prop = 0.95)
+  slice_min(margin, prop = 0.95, with_ties = T)
 
 py_trimmed = end_trimmed |>
   select(team = home_team, scored = home_score, allowed = away_score) |>
@@ -259,23 +259,6 @@ py_adj_scat = team_pythag_small |>
   inner_join(py_trimmed, by = "team") |>
   inner_join(teams_info, by = "team")
 
-py_adj_scat |>
-  ggplot(aes(pythag, py_trimmed)) +
-  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
-  scale_color_manual(values = team_hex) +
-  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
-  geom_abline(linetype = "dashed", alpha = 0.5) +
-  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  labs(x = "Actual Pythagorean Win Percentage",
-       y = "Adjusted Pythagorean Win Percentage",
-       title = "Raw vs. adjusted pythagorean wins",
-       subtitle = "Teams below/right of dashed line benefitting from blowout wins")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
-
-``` r
 help = py_adj_scat |>
   mutate(bb = pythag - py_trimmed,
          real = paste0(round(pythag * 100, 1), "%")) |>
@@ -283,6 +266,8 @@ help = py_adj_scat |>
   mutate(desc = as.character(glue("{abb}: {real} real vs. {lbl} adj."))) |>
   pull(desc) |>
   paste0(collapse = "\n")
+
+help = paste0("Most helped by blowouts:\n", help)
 
 hurt = py_adj_scat |>
   mutate(bb = pythag - py_trimmed,
@@ -292,11 +277,15 @@ hurt = py_adj_scat |>
   pull(desc) |>
   paste0(collapse = "\n")
 
+hurt = paste0("Most hurt by blowouts:\n", hurt)
+
 py_adj_scat |>
   ggplot(aes(pythag, py_trimmed)) +
   geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
   scale_color_manual(values = team_hex) +
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  geom_vline(xintercept = 0.5, linetype = "dotted", alpha = 0.25) +
+  geom_hline(yintercept = 0.5, linetype = "dotted", alpha = 0.25) +
   geom_abline(linetype = "dashed", alpha = 0.5) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
   scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
@@ -305,20 +294,15 @@ py_adj_scat |>
        title = "Raw vs. adjusted pythagorean wins",
        subtitle = "Teams below/right of dashed line benefitting from blowout wins") +
   annotate(geom = "label", label = help,
-  ### UPPER LEFT ###
-  x = max(py_adj_scat$pythag) - 0.05,
-  ### UPPER LEFT ###
-  ### ### ### ### ##
-  ### UPPER RIGHT ###
-  y = min(py_adj_scat$py_trimmed) + 0.05,
-  ### UPPER RIGHT ###
-  size = 3.5, fontface = "italic", fill = NA,
-  label.size = 0.5, label.padding = unit(0.3, "lines")) +
-annotate(geom = "label", label = hurt,
-         x = min(py_adj_scat$pythag) + 0.06,
-         y = max(py_adj_scat$py_trimmed) - 0.06,
-         size = 3.5, fontface = "italic", fill = NA,
-         label.size = 0.5, label.padding = unit(0.3, "lines"))
+           x = max(py_adj_scat$pythag) - 0.05,
+           y = min(py_adj_scat$py_trimmed) + 0.05,
+           size = 3.5, fontface = "italic", fill = NA,
+           label.size = 0.5, label.padding = unit(0.4, "lines")) +
+  annotate(geom = "label", label = hurt,
+           x = min(py_adj_scat$pythag) + 0.06,
+           y = max(py_adj_scat$py_trimmed) - 0.05,
+           size = 3.5, fontface = "italic", fill = NA,
+           label.size = 0.5, label.padding = unit(0.4, "lines"))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
