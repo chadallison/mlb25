@@ -441,7 +441,7 @@ ___
 ### Rolling Window Pythagorean Wins
 
 ```{r echo = F}
-window_size = 5
+window_size = 10
 
 team_scored_allowed |>
   arrange(team, date) |>
@@ -459,7 +459,7 @@ team_scored_allowed |>
   facet_wrap(vars(abb), scale = "free_x") +
   theme(axis.text = element_blank()) +
   labs(x = "Window number", y = "Pythagorean win percentage",
-       title = "Pythagorean win percentages in five-game rolling windows")
+       title = "Pythagorean win percentages in ten-game rolling windows")
 ```
 
 ___
@@ -481,7 +481,7 @@ team_npr_by_game |>
   facet_wrap(vars(abb), scale = "free_x") +
   theme(axis.text = element_blank()) +
   labs(x = "Window number", y = "NPR",
-       title = "Team NPR in five-game rolling windows")
+       title = "Team NPR in ten-game rolling windows")
 ```
 
 ___
@@ -856,6 +856,7 @@ py_adj_scat |>
 ```
 
 ___
+
 
 
 
