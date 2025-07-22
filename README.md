@@ -206,3 +206,80 @@ interpretability.
 ![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ------------------------------------------------------------------------
+
+``` r
+start_date = min(end_games$date)
+end_date = max(end_games$date)
+hitting = baseballr::bref_daily_batter(t1 = start_date, t2 = end_date)
+
+hitting |>
+  mutate(pa_pct = percent_rank(PA)) |>
+  filter(pa_pct >= 0.25) |>
+  mutate(Bases = BB + HBP + X1B + 2 * X2B + 3 * X3B + 4 * HR,
+         BPPA = Bases / PA) |>
+  arrange(desc(BPPA))
+```
+
+    ## # A tibble: 457 × 33
+    ##    bbref_id  season Name     Age Level Team      G    PA    AB     R     H   X1B
+    ##    <chr>      <int> <chr>  <dbl> <chr> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+    ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   100   447   367    89   128    66
+    ##  2 acunaro01   2025 Ronal…    27 Maj-… Atla…    49   211   174    46    57    34
+    ##  3 raleica01   2025 Cal R…    28 Maj-… Seat…    98   435   364    67    93    39
+    ##  4 ohtansh01   2025 Shohe…    30 Maj-… Los …    99   455   386    94   106    52
+    ##  5 kurtzni01   2025 Nick …    22 Maj-… Athl…    62   252   221    39    62    27
+    ##  6 suareeu01   2025 Eugen…    33 Maj-… Ariz…    99   408   362    64    93    39
+    ##  7 schwaky01   2025 Kyle …    32 Maj-… Phil…   100   443   367    70    91    44
+    ##  8 marteke01   2025 Ketel…    31 Maj-… Ariz…    69   302   256    53    74    41
+    ##  9 buxtoby01   2025 Byron…    31 Maj-… Minn…    81   348   312    68    91    50
+    ## 10 smithwi05   2025 Will …    30 Maj-… Los …    78   314   261    49    85    54
+    ## # ℹ 447 more rows
+    ## # ℹ 21 more variables: X2B <dbl>, X3B <dbl>, HR <dbl>, RBI <dbl>, BB <dbl>,
+    ## #   IBB <dbl>, uBB <dbl>, SO <dbl>, HBP <dbl>, SH <dbl>, SF <dbl>, GDP <dbl>,
+    ## #   SB <dbl>, CS <dbl>, BA <dbl>, OBP <dbl>, SLG <dbl>, OPS <dbl>,
+    ## #   pa_pct <dbl>, Bases <dbl>, BPPA <dbl>
+
+``` r
+pitching = baseballr::bref_daily_pitcher(t1 = start_date, t2 = end_date)
+
+bpip = pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP),
+         WHIP_Pct = percent_rank(WHIP),
+         diff = BPIP - WHIP) |>
+  filter(IP_Pct >= 0.75 & WHIP_Pct <= 0.25)
+
+true_worse = bpip |> slice_max(diff, n = 10, with_ties = F) |> pull(Name)
+true_better = bpip |> slice_min(diff, n = 10, with_ties = F) |> pull(Name)
+
+bpip |>
+  mutate(lbl = ifelse(Name %in% c(true_worse, true_better), Name, "")) |>
+  ggplot(aes(WHIP, BPIP)) +
+  geom_point() +
+  geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "solid", col = "springgreen4") +
+  ggrepel::geom_text_repel(aes(label = lbl), size = 3, max.overlaps = 10)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+``` r
+pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP)) |>
+  filter(IP_Pct >= 0.75) |>
+  select(Name, Age, Team, IP, ERA, WHIP, BPIP) |>
+  slice_min(BPIP, n = 10, with_ties = F) |>
+  ggplot(aes(reorder(Name, -BPIP), BPIP)) +
+  geom_col() +
+  coord_flip()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->

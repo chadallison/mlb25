@@ -862,7 +862,60 @@ ___
 
 
 
+```{r message = F, warning = F}
+start_date = min(end_games$date)
+end_date = max(end_games$date)
+hitting = baseballr::bref_daily_batter(t1 = start_date, t2 = end_date)
 
+hitting |>
+  mutate(pa_pct = percent_rank(PA)) |>
+  filter(pa_pct >= 0.25) |>
+  mutate(Bases = BB + HBP + X1B + 2 * X2B + 3 * X3B + 4 * HR,
+         BPPA = Bases / PA) |>
+  arrange(desc(BPPA))
+```
+
+```{r message = F, warning = F}
+pitching = baseballr::bref_daily_pitcher(t1 = start_date, t2 = end_date)
+
+bpip = pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP),
+         WHIP_Pct = percent_rank(WHIP),
+         diff = BPIP - WHIP) |>
+  filter(IP_Pct >= 0.75 & WHIP_Pct <= 0.25)
+
+true_worse = bpip |> slice_max(diff, n = 10, with_ties = F) |> pull(Name)
+true_better = bpip |> slice_min(diff, n = 10, with_ties = F) |> pull(Name)
+
+bpip |>
+  mutate(lbl = ifelse(Name %in% c(true_worse, true_better), Name, "")) |>
+  ggplot(aes(WHIP, BPIP)) +
+  geom_point() +
+  geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "solid", col = "springgreen4") +
+  ggrepel::geom_text_repel(aes(label = lbl), size = 3, max.overlaps = 10)
+```
+
+
+```{r message = F, warning = F}
+pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP)) |>
+  filter(IP_Pct >= 0.75) |>
+  select(Name, Age, Team, IP, ERA, WHIP, BPIP) |>
+  slice_min(BPIP, n = 10, with_ties = F) |>
+  ggplot(aes(reorder(Name, -BPIP), BPIP)) +
+  geom_col() +
+  coord_flip()
+```
 
 
 
