@@ -909,12 +909,16 @@ pitching |>
          Real_IP = Full_Innings + Partial_Innings / 3,
          BPIP = round(Bases / Real_IP, 3),
          IP_Pct = percent_rank(IP)) |>
-  filter(IP_Pct >= 0.75) |>
-  select(Name, Age, Team, IP, ERA, WHIP, BPIP) |>
-  slice_min(BPIP, n = 10, with_ties = F) |>
-  ggplot(aes(reorder(Name, -BPIP), BPIP)) +
-  geom_col() +
-  coord_flip()
+  filter(IP_Pct >= 0.5) |>
+  mutate(Name_IP = as.character(glue("{Name} ({IP} IP)")),
+         IP_Tier = ifelse(IP_Pct >= 0.75, "Top Tier", "Mid Tier")) |>
+  transmute(Name, Name_IP, Age, Team, IP, IP_Tier, ERA, WHIP, BPIP) |>
+  slice_min(BPIP, n = 25, with_ties = F) |>
+  ggplot(aes(reorder(Name_IP, -BPIP), BPIP)) +
+  geom_col(aes(fill = Team), show.legend = F) +
+  coord_flip() +
+  labs(x = NULL, y = "BPIP",
+       title = "Best Pitchers, BPIP")
 ```
 
 
