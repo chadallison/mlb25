@@ -918,6 +918,27 @@ pitching |>
 ```
 
 
+```{r message = F, warning = F}
+training = pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP)) |>
+  filter(IP_Pct >= 0.25) |>
+  select(Name, Team, ERA, WHIP, BPIP)
+
+whip_era = lm(ERA ~ WHIP, data = training, method = "lm")
+bpip_era = lm(ERA ~ BPIP, data = training, method = "lm")
+
+data.frame(
+  model = c("ERA ~ WHIP", "ERA ~ BPIP"),
+  r_squared = c(round(summary(whip_era)$r.squared, 3), round(summary(bpip_era)$r.squared, 3)),
+  adj_r_squared = c(round(summary(whip_era)$adj.r.squared, 3), round(summary(bpip_era)$adj.r.squared, 3))
+)
+```
+
 
 
 

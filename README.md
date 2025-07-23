@@ -220,20 +220,20 @@ hitting |>
   arrange(desc(BPPA))
 ```
 
-    ## # A tibble: 457 × 33
+    ## # A tibble: 458 × 33
     ##    bbref_id  season Name     Age Level Team      G    PA    AB     R     H   X1B
     ##    <chr>      <int> <chr>  <dbl> <chr> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-    ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   100   447   367    89   128    66
-    ##  2 acunaro01   2025 Ronal…    27 Maj-… Atla…    49   211   174    46    57    34
-    ##  3 raleica01   2025 Cal R…    28 Maj-… Seat…    98   435   364    67    93    39
-    ##  4 ohtansh01   2025 Shohe…    30 Maj-… Los …    99   455   386    94   106    52
-    ##  5 kurtzni01   2025 Nick …    22 Maj-… Athl…    62   252   221    39    62    27
-    ##  6 suareeu01   2025 Eugen…    33 Maj-… Ariz…    99   408   362    64    93    39
-    ##  7 schwaky01   2025 Kyle …    32 Maj-… Phil…   100   443   367    70    91    44
-    ##  8 marteke01   2025 Ketel…    31 Maj-… Ariz…    69   302   256    53    74    41
-    ##  9 buxtoby01   2025 Byron…    31 Maj-… Minn…    81   348   312    68    91    50
-    ## 10 smithwi05   2025 Will …    30 Maj-… Los …    78   314   261    49    85    54
-    ## # ℹ 447 more rows
+    ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   101   451   370    89   128    66
+    ##  2 raleica01   2025 Cal R…    28 Maj-… Seat…    99   438   367    68    94    39
+    ##  3 acunaro01   2025 Ronal…    27 Maj-… Atla…    50   215   178    46    57    34
+    ##  4 ohtansh01   2025 Shohe…    30 Maj-… Los …   100   460   391    95   107    52
+    ##  5 kurtzni01   2025 Nick …    22 Maj-… Athl…    63   256   224    39    63    28
+    ##  6 schwaky01   2025 Kyle …    32 Maj-… Phil…   101   447   371    71    92    44
+    ##  7 suareeu01   2025 Eugen…    33 Maj-… Ariz…   100   412   366    64    93    39
+    ##  8 marteke01   2025 Ketel…    31 Maj-… Ariz…    70   306   260    53    74    41
+    ##  9 smithwi05   2025 Will …    30 Maj-… Los …    79   319   265    51    86    55
+    ## 10 buxtoby01   2025 Byron…    31 Maj-… Minn…    82   353   317    68    92    51
+    ## # ℹ 448 more rows
     ## # ℹ 21 more variables: X2B <dbl>, X3B <dbl>, HR <dbl>, RBI <dbl>, BB <dbl>,
     ## #   IBB <dbl>, uBB <dbl>, SO <dbl>, HBP <dbl>, SH <dbl>, SF <dbl>, GDP <dbl>,
     ## #   SB <dbl>, CS <dbl>, BA <dbl>, OBP <dbl>, SLG <dbl>, OPS <dbl>,
@@ -283,3 +283,28 @@ pitching |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+``` r
+training = pitching |>
+  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
+  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
+         Real_IP = Full_Innings + Partial_Innings / 3,
+         BPIP = round(Bases / Real_IP, 3),
+         IP_Pct = percent_rank(IP)) |>
+  filter(IP_Pct >= 0.25) |>
+  select(Name, Team, ERA, WHIP, BPIP)
+
+whip_era = lm(ERA ~ WHIP, data = training, method = "lm")
+bpip_era = lm(ERA ~ BPIP, data = training, method = "lm")
+
+data.frame(
+  model = c("ERA ~ WHIP", "ERA ~ BPIP"),
+  r_squared = c(round(summary(whip_era)$r.squared, 3), round(summary(bpip_era)$r.squared, 3)),
+  adj_r_squared = c(round(summary(whip_era)$adj.r.squared, 3), round(summary(bpip_era)$adj.r.squared, 3))
+)
+```
+
+    ##        model r_squared adj_r_squared
+    ## 1 ERA ~ WHIP     0.707         0.707
+    ## 2 ERA ~ BPIP     0.766         0.765
