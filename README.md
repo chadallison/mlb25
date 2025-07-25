@@ -220,20 +220,20 @@ hitting |>
   arrange(desc(BPPA))
 ```
 
-    ## # A tibble: 458 × 33
+    ## # A tibble: 460 × 33
     ##    bbref_id  season Name     Age Level Team      G    PA    AB     R     H   X1B
     ##    <chr>      <int> <chr>  <dbl> <chr> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
     ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   102   455   374    90   129    66
-    ##  2 raleica01   2025 Cal R…    28 Maj-… Seat…    99   438   367    68    94    39
-    ##  3 ohtansh01   2025 Shohe…    30 Maj-… Los …   101   465   395    97   108    52
+    ##  2 ohtansh01   2025 Shohe…    30 Maj-… Los …   101   465   395    97   108    52
+    ##  3 raleica01   2025 Cal R…    28 Maj-… Seat…   100   443   371    69    95    40
     ##  4 acunaro01   2025 Ronal…    27 Maj-… Atla…    50   215   178    46    57    34
-    ##  5 kurtzni01   2025 Nick …    22 Maj-… Athl…    64   260   228    39    64    28
+    ##  5 kurtzni01   2025 Nick …    22 Maj-… Athl…    65   265   233    39    67    29
     ##  6 schwaky01   2025 Kyle …    32 Maj-… Phil…   102   452   376    72    94    45
     ##  7 suareeu01   2025 Eugen…    33 Maj-… Ariz…   101   416   369    64    93    39
     ##  8 marteke01   2025 Ketel…    31 Maj-… Ariz…    71   311   265    55    76    42
     ##  9 smithwi05   2025 Will …    30 Maj-… Los …    80   321   266    51    86    55
     ## 10 stoweky01   2025 Kyle …    27 Maj-… Miami    97   371   325    49    96    55
-    ## # ℹ 448 more rows
+    ## # ℹ 450 more rows
     ## # ℹ 21 more variables: X2B <dbl>, X3B <dbl>, HR <dbl>, RBI <dbl>, BB <dbl>,
     ## #   IBB <dbl>, uBB <dbl>, SO <dbl>, HBP <dbl>, SH <dbl>, SF <dbl>, GDP <dbl>,
     ## #   SB <dbl>, CS <dbl>, BA <dbl>, OBP <dbl>, SLG <dbl>, OPS <dbl>,
@@ -311,4 +311,4 @@ data.frame(
 
     ##        model r_squared adj_r_squared
     ## 1 ERA ~ WHIP     0.708         0.707
-    ## 2 ERA ~ BPIP     0.768         0.768
+    ## 2 ERA ~ BPIP     0.768         0.767

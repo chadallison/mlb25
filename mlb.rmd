@@ -900,7 +900,6 @@ bpip |>
   ggrepel::geom_text_repel(aes(label = lbl), size = 3, max.overlaps = 10)
 ```
 
-
 ```{r message = F, warning = F}
 pitching |>
   mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
