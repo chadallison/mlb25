@@ -220,20 +220,20 @@ hitting |>
   arrange(desc(BPPA))
 ```
 
-    ## # A tibble: 460 × 33
+    ## # A tibble: 461 × 33
     ##    bbref_id  season Name     Age Level Team      G    PA    AB     R     H   X1B
     ##    <chr>      <int> <chr>  <dbl> <chr> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
     ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   103   459   377    90   129    66
-    ##  2 kurtzni01   2025 Nick …    22 Maj-… Athl…    66   271   239    45    73    30
-    ##  3 ohtansh01   2025 Shohe…    30 Maj-… Los …   102   470   399    98   109    53
-    ##  4 raleica01   2025 Cal R…    28 Maj-… Seat…   101   448   376    69    96    41
-    ##  5 acunaro01   2025 Ronal…    27 Maj-… Atla…    51   220   182    46    58    35
-    ##  6 schwaky01   2025 Kyle …    32 Maj-… Phil…   103   458   381    75    97    46
-    ##  7 marteke01   2025 Ketel…    31 Maj-… Ariz…    72   316   267    55    76    42
-    ##  8 suareeu01   2025 Eugen…    33 Maj-… Ariz…   102   421   373    64    93    39
-    ##  9 stoweky01   2025 Kyle …    27 Maj-… Miami    98   376   328    51    97    55
-    ## 10 smithwi05   2025 Will …    30 Maj-… Los …    81   326   271    52    88    57
-    ## # ℹ 450 more rows
+    ##  2 kurtzni01   2025 Nick …    22 Maj-… Athl…    67   276   243    46    75    32
+    ##  3 ohtansh01   2025 Shohe…    30 Maj-… Los …   103   474   403    99   110    53
+    ##  4 raleica01   2025 Cal R…    28 Maj-… Seat…   102   453   381    70    98    42
+    ##  5 schwaky01   2025 Kyle …    32 Maj-… Phil…   104   464   386    75    99    47
+    ##  6 acunaro01   2025 Ronal…    27 Maj-… Atla…    52   225   187    46    58    35
+    ##  7 marteke01   2025 Ketel…    31 Maj-… Ariz…    73   320   271    55    77    43
+    ##  8 stoweky01   2025 Kyle …    27 Maj-… Miami    99   380   332    52    99    56
+    ##  9 suareeu01   2025 Eugen…    33 Maj-… Ariz…   103   425   377    64    94    40
+    ## 10 smithwi05   2025 Will …    30 Maj-… Los …    82   330   274    52    89    58
+    ## # ℹ 451 more rows
     ## # ℹ 21 more variables: X2B <dbl>, X3B <dbl>, HR <dbl>, RBI <dbl>, BB <dbl>,
     ## #   IBB <dbl>, uBB <dbl>, SO <dbl>, HBP <dbl>, SH <dbl>, SF <dbl>, GDP <dbl>,
     ## #   SB <dbl>, CS <dbl>, BA <dbl>, OBP <dbl>, SLG <dbl>, OPS <dbl>,
@@ -310,5 +310,5 @@ data.frame(
 ```
 
     ##        model r_squared adj_r_squared
-    ## 1 ERA ~ WHIP     0.707         0.707
-    ## 2 ERA ~ BPIP     0.768         0.767
+    ## 1 ERA ~ WHIP     0.704         0.704
+    ## 2 ERA ~ BPIP     0.766         0.766
