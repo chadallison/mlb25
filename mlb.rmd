@@ -858,26 +858,7 @@ py_adj_scat |>
 ___
 
 
-```{r message = F, warning = F}
-pitching = bref_daily_pitcher(t1 = min(end_games$date), t2 = max(end_games$date)) |>
-  clean_names()
 
-pitching |>
-  separate(ip, into = c("full_ip", "partial_ip"), sep = "\\.", remove = T, convert = T) |>
-  mutate(bases = bb + hbp + x1b + x2b * 2 + x3b * 3 + hr * 4,
-         ip = full_ip + coalesce(partial_ip, 0) / 3) |>
-  slice_max(ip, prop = 0.5) |>
-  mutate(bpip = bases / ip) |>
-  filter(!str_detect(team, ",")) |>
-  group_by(team) |>
-  summarise(ip = sum(ip),
-            bases = sum(bases)) |>
-  mutate(bpip = bases / ip) |>
-  arrange(bpip) |>
-  ggplot(aes(reorder(team, -bpip), bpip)) +
-  geom_col() +
-  coord_flip()
-```
 
 
 
