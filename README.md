@@ -208,107 +208,24 @@ interpretability.
 ------------------------------------------------------------------------
 
 ``` r
-start_date = min(end_games$date)
-end_date = max(end_games$date)
-hitting = baseballr::bref_daily_batter(t1 = start_date, t2 = end_date)
+pitching = bref_daily_pitcher(t1 = min(end_games$date), t2 = max(end_games$date)) |>
+  clean_names()
 
-hitting |>
-  mutate(pa_pct = percent_rank(PA)) |>
-  filter(pa_pct >= 0.25) |>
-  mutate(Bases = BB + HBP + X1B + 2 * X2B + 3 * X3B + 4 * HR,
-         BPPA = Bases / PA) |>
-  arrange(desc(BPPA))
-```
-
-    ## # A tibble: 461 × 33
-    ##    bbref_id  season Name     Age Level Team      G    PA    AB     R     H   X1B
-    ##    <chr>      <int> <chr>  <dbl> <chr> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-    ##  1 judgeaa01   2025 Aaron…    33 Maj-… New …   103   459   377    90   129    66
-    ##  2 kurtzni01   2025 Nick …    22 Maj-… Athl…    67   276   243    46    75    32
-    ##  3 ohtansh01   2025 Shohe…    30 Maj-… Los …   103   474   403    99   110    53
-    ##  4 raleica01   2025 Cal R…    28 Maj-… Seat…   102   453   381    70    98    42
-    ##  5 schwaky01   2025 Kyle …    32 Maj-… Phil…   104   464   386    75    99    47
-    ##  6 acunaro01   2025 Ronal…    27 Maj-… Atla…    52   225   187    46    58    35
-    ##  7 marteke01   2025 Ketel…    31 Maj-… Ariz…    73   320   271    55    77    43
-    ##  8 stoweky01   2025 Kyle …    27 Maj-… Miami    99   380   332    52    99    56
-    ##  9 suareeu01   2025 Eugen…    33 Maj-… Ariz…   103   425   377    64    94    40
-    ## 10 smithwi05   2025 Will …    30 Maj-… Los …    82   330   274    52    89    58
-    ## # ℹ 451 more rows
-    ## # ℹ 21 more variables: X2B <dbl>, X3B <dbl>, HR <dbl>, RBI <dbl>, BB <dbl>,
-    ## #   IBB <dbl>, uBB <dbl>, SO <dbl>, HBP <dbl>, SH <dbl>, SF <dbl>, GDP <dbl>,
-    ## #   SB <dbl>, CS <dbl>, BA <dbl>, OBP <dbl>, SLG <dbl>, OPS <dbl>,
-    ## #   pa_pct <dbl>, Bases <dbl>, BPPA <dbl>
-
-``` r
-pitching = baseballr::bref_daily_pitcher(t1 = start_date, t2 = end_date)
-
-bpip = pitching |>
-  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
-  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
-  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
-         Real_IP = Full_Innings + Partial_Innings / 3,
-         BPIP = round(Bases / Real_IP, 3),
-         IP_Pct = percent_rank(IP),
-         WHIP_Pct = percent_rank(WHIP),
-         diff = BPIP - WHIP) |>
-  filter(IP_Pct >= 0.75 & WHIP_Pct <= 0.25)
-
-true_worse = bpip |> slice_max(diff, n = 10, with_ties = F) |> pull(Name)
-true_better = bpip |> slice_min(diff, n = 10, with_ties = F) |> pull(Name)
-
-bpip |>
-  mutate(lbl = ifelse(Name %in% c(true_worse, true_better), Name, "")) |>
-  ggplot(aes(WHIP, BPIP)) +
-  geom_point() +
-  geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "solid", col = "springgreen4") +
-  ggrepel::geom_text_repel(aes(label = lbl), size = 3, max.overlaps = 10)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
-
-``` r
 pitching |>
-  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
-  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
-  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
-         Real_IP = Full_Innings + Partial_Innings / 3,
-         BPIP = round(Bases / Real_IP, 3),
-         IP_Pct = percent_rank(IP)) |>
-  filter(IP_Pct >= 0.5) |>
-  mutate(Name_IP = as.character(glue("{Name} ({IP} IP)")),
-         IP_Tier = ifelse(IP_Pct >= 0.75, "Top Tier", "Mid Tier")) |>
-  transmute(Name, Name_IP, Age, Team, IP, IP_Tier, ERA, WHIP, BPIP) |>
-  slice_min(BPIP, n = 25, with_ties = F) |>
-  ggplot(aes(reorder(Name_IP, -BPIP), BPIP)) +
-  geom_col(aes(fill = Team), show.legend = F) +
-  coord_flip() +
-  labs(x = NULL, y = "BPIP",
-       title = "Best Pitchers, BPIP")
+  separate(ip, into = c("full_ip", "partial_ip"), sep = "\\.", remove = T, convert = T) |>
+  mutate(bases = bb + hbp + x1b + x2b * 2 + x3b * 3 + hr * 4,
+         ip = full_ip + coalesce(partial_ip, 0) / 3) |>
+  slice_max(ip, prop = 0.5) |>
+  mutate(bpip = bases / ip) |>
+  filter(!str_detect(team, ",")) |>
+  group_by(team) |>
+  summarise(ip = sum(ip),
+            bases = sum(bases)) |>
+  mutate(bpip = bases / ip) |>
+  arrange(bpip) |>
+  ggplot(aes(reorder(team, -bpip), bpip)) +
+  geom_col() +
+  coord_flip()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
-
-``` r
-training = pitching |>
-  mutate(Bases = BB + X1B + 2 * X2B + 3 * X3B + 4 * HR) |>
-  separate(IP, into = c("Full_Innings", "Partial_Innings"), sep = "\\.", remove = F, convert = T) |>
-  mutate(Partial_Innings = coalesce(Partial_Innings, 0),
-         Real_IP = Full_Innings + Partial_Innings / 3,
-         BPIP = round(Bases / Real_IP, 3),
-         IP_Pct = percent_rank(IP)) |>
-  filter(IP_Pct >= 0.25) |>
-  select(Name, Team, ERA, WHIP, BPIP)
-
-whip_era = lm(ERA ~ WHIP, data = training, method = "lm")
-bpip_era = lm(ERA ~ BPIP, data = training, method = "lm")
-
-data.frame(
-  model = c("ERA ~ WHIP", "ERA ~ BPIP"),
-  r_squared = c(round(summary(whip_era)$r.squared, 3), round(summary(bpip_era)$r.squared, 3)),
-  adj_r_squared = c(round(summary(whip_era)$adj.r.squared, 3), round(summary(bpip_era)$adj.r.squared, 3))
-)
-```
-
-    ##        model r_squared adj_r_squared
-    ## 1 ERA ~ WHIP     0.704         0.704
-    ## 2 ERA ~ BPIP     0.766         0.766
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
