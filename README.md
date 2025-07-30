@@ -31,8 +31,7 @@ out on GitHub:
   Schedule](#performance-by-strength-of-schedule)
 - [One Run Games](#one-run-games)
 - [Pythagorean Wins in Last Ten](#pythagorean-wins-in-last-ten)
-- [Biggest Pythagorean Changes in Last
-  25](#biggest-pythagorean-changes-in-last-25)
+- [Pythagorean Wins in Last 25](#pythagorean-wins-in-last-25)
 - [Adjusted Pythagorean Wins](#adjusted-pythagorean-wins)
 - [Raw vs Adjusted Pythagorean Wins](#raw-vs-adjusted-pythagorean-wins)
 
@@ -189,7 +188,7 @@ interpretability.
 
 ------------------------------------------------------------------------
 
-### Biggest Pythagorean Changes in Last 25
+### Pythagorean Wins in Last 25
 
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 

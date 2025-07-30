@@ -28,7 +28,7 @@ ___
 - [Performance by Strength of Schedule]
 - [One Run Games]
 - [Pythagorean Wins in Last Ten]
-- [Biggest Pythagorean Changes in Last 25]
+- [Pythagorean Wins in Last 25]
 - [Adjusted Pythagorean Wins]
 - [Raw vs Adjusted Pythagorean Wins]
 
@@ -733,37 +733,27 @@ team_scored_allowed |>
 
 ___
 
-### Biggest Pythagorean Changes in Last 25
+### Pythagorean Wins in Last 25
 
 ```{r echo = F}
 team_scored_allowed |>
-  arrange(team, date) |>
-  mutate(game_num = row_number(),
-         games_played = n(),
-         .by = "team") |>
-  filter(game_num < games_played - 25) |>
-  group_by(team) |>
-  summarise(scored = sum(scored),
-            allowed = sum(allowed)) |>
-  transmute(team, py_prev = round(scored ^ 2 / (scored ^ 2 + allowed ^ 2), 3)) |>
-  inner_join(team_pythag_small, by = "team") |>
-  inner_join(teams_info, by = "team") |>
-  mutate(diff = pythag - py_prev) |>
-  arrange(desc(diff)) |>
-  ggplot(aes(py_prev, pythag)) +
-  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
-  geom_line(stat = "smooth", method = "lm", formula = y ~ x, linetype = "dashed", alpha = 0.5) +
-  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.25) +
-  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.25) +
-  # geom_abline(linetype = "solid", col = "red") +
+  arrange(team, date) |> group_by(team) |> slice_tail(n = 25) |>
+  filter(abs(scored - allowed) <= 25) |>
+  summarise(scored = sum(scored), allowed = sum(allowed), .groups = "drop") |>
+  mutate(py25 = scored^2 / (scored^2 + allowed^2)) |>
+  inner_join(team_pythag_small, by = "team") |> inner_join(teams_info, by = "team") |>
+  ggplot(aes(x = pythag, y = py25)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = FALSE) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_abline(linetype = "dashed", alpha = 0.5) +
   scale_color_manual(values = team_hex) +
   ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
-  labs(x = "Pythagorean Wins as of 25 Games Ago",
-       y = "Current Pythagorean Wins",
-       title = "Pythagorean Movement in Past 25 Games",
-       subtitle = "Teams above dashed line have improved in their last 25 relative to other teams") +
-  scale_x_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent)
+  labs(x = "Overall Pythagorean Win Percentage",
+       y = "Pythagorean Win Percentage (Last 25 Games)",
+       title = "Pythagorean Wins: Last 25 Games vs. Full Season") +
+  scale_x_continuous(breaks = seq(0, 1, 0.05), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, 0.05), labels = scales::percent)
 ```
 
 ___
@@ -856,8 +846,6 @@ py_adj_scat |>
 ```
 
 ___
-
-
 
 
 
