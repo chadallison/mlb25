@@ -205,3 +205,27 @@ interpretability.
 ![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ------------------------------------------------------------------------
+
+``` r
+min_dt = min(end_games$date)
+max_dt = max(end_games$date)
+pitch = bref_daily_pitcher(t1 = min_dt, t2 = max_dt)
+
+pitch |>
+  filter(!str_detect(Team, ",")) |>
+  separate(IP, into = c("Full_IP", "Part_IP"), sep = "\\.", remove = F, convert = T) |>
+  mutate(Bases = BB + HBP + X1B + 2 * X2B + 3 * X3B + 4 * HR,
+         BPIP = round(Bases / (Full_IP + coalesce(Part_IP, 0) / 3), 3)) |>
+  slice_max(IP, prop = 0.25) |>
+  mutate(pred = predict(lm(BPIP ~ WHIP, data = cur_data())),
+         dist_from_line = abs(BPIP - pred)) |>
+  mutate(label = if_else(rank(-dist_from_line) <= 10, Name, NA)) |>
+  ggplot(aes(WHIP, BPIP, label = label)) +
+  geom_point(alpha = 0.25) +
+  geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "dashed") +
+  ggrepel::geom_text_repel(na.rm = T, size = 3.5, max.overlaps = 10) +
+  scale_x_continuous(breaks = seq(0, 2.5, by = 0.1)) +
+  scale_y_continuous(breaks = seq(0, 3, by = 0.2))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
