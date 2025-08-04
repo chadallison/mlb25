@@ -229,3 +229,22 @@ pitch |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+``` r
+team_rspg_rapg
+```
+
+    ## # A tibble: 30 × 3
+    ##    team                  rspg  rapg
+    ##    <chr>                <dbl> <dbl>
+    ##  1 Arizona Diamondbacks  4.82  4.91
+    ##  2 Athletics             4.32  5.38
+    ##  3 Atlanta Braves        4.19  4.37
+    ##  4 Baltimore Orioles     4.37  4.98
+    ##  5 Boston Red Sox        4.96  4.25
+    ##  6 Chicago Cubs          5.22  4.18
+    ##  7 Chicago White Sox     3.84  4.41
+    ##  8 Cincinnati Reds       4.54  4.21
+    ##  9 Cleveland Guardians   3.94  4.20
+    ## 10 Colorado Rockies      3.77  6.26
+    ## # ℹ 20 more rows
