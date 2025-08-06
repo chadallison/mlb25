@@ -34,6 +34,8 @@ out on GitHub:
 - [Pythagorean Wins in Last 25](#pythagorean-wins-in-last-25)
 - [Adjusted Pythagorean Wins](#adjusted-pythagorean-wins)
 - [Raw vs Adjusted Pythagorean Wins](#raw-vs-adjusted-pythagorean-wins)
+- [Pythagorean Wins in Groups of Seven - in
+  progress](#pythagorean-wins-in-groups-of-seven---in-progress)
 
 ------------------------------------------------------------------------
 
@@ -221,30 +223,27 @@ pitch |>
          dist_from_line = abs(BPIP - pred)) |>
   mutate(label = if_else(rank(-dist_from_line) <= 10, Name, NA)) |>
   ggplot(aes(WHIP, BPIP, label = label)) +
-  geom_point(alpha = 0.25) +
+  geom_point(col = "springgreen4", alpha = 0.25) +
   geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "dashed") +
   ggrepel::geom_text_repel(na.rm = T, size = 3.5, max.overlaps = 10) +
   scale_x_continuous(breaks = seq(0, 2.5, by = 0.1)) +
-  scale_y_continuous(breaks = seq(0, 3, by = 0.2))
+  scale_y_continuous(breaks = seq(0, 3, by = 0.2)) +
+  labs(title = "WHIP vs. BPIP",
+       subtitle = "Players below the dashed line are better than their WHIP suggests")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
-``` r
-team_rspg_rapg
-```
+------------------------------------------------------------------------
 
-    ## # A tibble: 30 × 3
-    ##    team                  rspg  rapg
-    ##    <chr>                <dbl> <dbl>
-    ##  1 Arizona Diamondbacks  4.82  4.91
-    ##  2 Athletics             4.32  5.38
-    ##  3 Atlanta Braves        4.19  4.37
-    ##  4 Baltimore Orioles     4.37  4.98
-    ##  5 Boston Red Sox        4.96  4.25
-    ##  6 Chicago Cubs          5.22  4.18
-    ##  7 Chicago White Sox     3.84  4.41
-    ##  8 Cincinnati Reds       4.54  4.21
-    ##  9 Cleveland Guardians   3.94  4.20
-    ## 10 Colorado Rockies      3.77  6.26
-    ## # ℹ 20 more rows
+### Offensive and Defensive NPR Ranks
+
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+------------------------------------------------------------------------
+
+### Pythagorean Wins in Groups of Seven - in progress
+
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+------------------------------------------------------------------------

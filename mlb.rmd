@@ -31,6 +31,7 @@ ___
 - [Pythagorean Wins in Last 25]
 - [Adjusted Pythagorean Wins]
 - [Raw vs Adjusted Pythagorean Wins]
+- [Pythagorean Wins in Groups of Seven - in progress]
 
 ___
 
@@ -868,22 +869,73 @@ pitch |>
          dist_from_line = abs(BPIP - pred)) |>
   mutate(label = if_else(rank(-dist_from_line) <= 10, Name, NA)) |>
   ggplot(aes(WHIP, BPIP, label = label)) +
-  geom_point(alpha = 0.25) +
+  geom_point(col = "springgreen4", alpha = 0.25) +
   geom_line(stat = "smooth", formula = y ~ x, method = "lm", linetype = "dashed") +
   ggrepel::geom_text_repel(na.rm = T, size = 3.5, max.overlaps = 10) +
   scale_x_continuous(breaks = seq(0, 2.5, by = 0.1)) +
-  scale_y_continuous(breaks = seq(0, 3, by = 0.2))
+  scale_y_continuous(breaks = seq(0, 3, by = 0.2)) +
+  labs(title = "WHIP vs. BPIP",
+       subtitle = "Players below the dashed line are better than their WHIP suggests")
 ```
 
+___
 
+### Offensive and Defensive NPR Ranks
 
-```{r}
-team_rspg_rapg
+```{r echo = F}
+team_npr |>
+  mutate(off_rank = rank(off_npr),
+         def_rank = rank(def_npr)) |>
+  inner_join(teams_info, by = "team") |>
+  ggplot(aes(off_rank, def_rank)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = FALSE) +
+  geom_vline(xintercept = 15, linetype = "dashed", alpha = 0.25) +
+  geom_hline(yintercept = 15, linetype = "dashed", alpha = 0.25) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3.5, max.overlaps = 30) +
+  scale_color_manual(values = team_hex) +
+  scale_x_continuous(breaks = seq(30, 0, by = -2)) +
+  scale_y_continuous(breaks = seq(30, 0, by = -2)) +
+  labs(x = "Offensive NPR Rank", y = "Defensive NPR Rank",
+       title = "Scatterplot of Team Offensive/Defensive NPR Ranks")
 ```
 
+___
 
+### Pythagorean Wins in Groups of Seven - in progress
 
+```{r echo = F}
+group_size = 7
 
+end_games |>
+  select(date, team = home_team, scored = home_score, allowed = away_score) |>
+  bind_rows(
+    end_games |>
+      select(date, team = away_team, scored = away_score, allowed = home_score)
+  ) |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(), .by = "team") |>
+  mutate(group7 = ((game_num - 1) %/% group_size) + 1) |>
+  mutate(group_cnt = n(), .by = c("team", "group7")) |>
+  filter(group_cnt == group_size) |>
+  group_by(team, group7) |>
+  summarise(scored = sum(scored),
+            allowed = sum(allowed),
+            .groups = "drop") |>
+  mutate(py = scored ^ 2 / (scored ^ 2 + allowed ^ 2)) |>
+  inner_join(teams_info, by = "team") |>
+  inner_join(team_pythag_small, by = "team") |>
+  mutate(team2 = as.character(glue("{abb} ({pythag})"))) |>
+  mutate(team2 = fct_reorder(team2, pythag, .desc = T)) |>
+  ggplot(aes(group7, py)) +
+  geom_line(aes(col = team), linewidth = 1.5, show.legend = F) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  scale_color_manual(values = team_hex) +
+  facet_wrap(vars(team2)) +
+  theme(axis.text = element_blank()) +
+  labs(title = "Pythagorean Wins in Groups of Seven", x = NULL, y = NULL)
+```
+
+___
 
 
 
