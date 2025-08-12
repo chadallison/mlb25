@@ -247,7 +247,7 @@ team_npr |>
   geom_text(aes(label = nl), size = 3, hjust = 1.25) +
   scale_fill_manual(values = team_hex) +
   scale_y_continuous(breaks = seq(-3, 3, by = 0.25)) +
-  coord_flip(ylim = c(min(team_npr$ovr_npr) * 1.05, max(team_npr$ovr_npr) * 1.05)) +
+  coord_flip(ylim = c(min(team_npr$ovr_npr) * 1.075, max(team_npr$ovr_npr) * 1.075)) +
   labs(x = NULL, y = "Overall NPR",
        title = glue("Team NPR standings as of {today_nice}"))
 ```
