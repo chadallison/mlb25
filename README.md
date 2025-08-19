@@ -293,8 +293,63 @@ end_games |>
   geom_line(aes(col = team), linewidth = 1.25, show.legend = F) +
   scale_color_manual(values = team_hex) +
   facet_wrap(vars(division)) +
-  labs(x = "Game Number", y = "Cumulative Run Differential") +
+  labs(x = "Game Number", y = "Cumulative Run Differential",
+       title = "Cumulative Run Differentials by Division") +
   scale_x_continuous(breaks = seq(0, 162, by = 20))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+``` r
+top_teams = team_records |>
+  slice_max(win_pct, n = 10, with_ties = F) |>
+  pull(team)
+
+# end_with_npr |>
+#   transmute(date, team = home_team, npr = home_off_npr + home_def_npr) |>
+#   bind_rows(
+#     end_with_npr |>
+#       transmute(date, team = away_team, npr = away_off_npr + away_def_npr)
+#   ) |>
+#   arrange(team, date) |>
+#   mutate(game_num = row_number(),
+#          cum_npr = cumsum(npr),
+#          .by = "team") |>
+#   inner_join(teams_info, by = "team") |>
+#   ggplot(aes(game_num, cum_npr)) +
+#   geom_line(aes(col = team), linewidth = 1.25, show.legend = F) +
+#   scale_color_manual(values = team_hex)
+
+top_teams = team_records |>
+  slice_max(win_pct, n = 10, with_ties = FALSE) |>
+  pull(team)
+
+end_with_npr |>
+  transmute(date, team = home_team, npr = home_off_npr + home_def_npr) |>
+  bind_rows(
+    end_with_npr |>
+      transmute(date, team = away_team, npr = away_off_npr + away_def_npr)
+  ) |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         cum_npr = cumsum(npr),
+         .by = "team") |>
+  inner_join(teams_info, by = "team") |>
+  mutate(in_top = team %in% top_teams) |>
+  ggplot(aes(game_num, cum_npr, group = team)) +
+  geom_line(aes(col = team, alpha = in_top), linewidth = 1.25, show.legend = F) +
+  scale_color_manual(values = team_hex) +
+  scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = 0.1)) +
+  ggrepel::geom_text_repel(
+    data = \(d) d |>
+      group_by(team) |>
+      slice_tail(n = 1) |>
+      filter(team %in% top_teams),
+    aes(label = abb, col = team),
+    size = 3.5, nudge_x = 5, hjust = 0, direction = "y", segment.color = NA, show.legend = F) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(breaks = seq(0, 162, by = 10)) +
+  scale_y_continuous(breaks = seq(-300, 300, by = 20))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
