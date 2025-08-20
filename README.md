@@ -255,34 +255,6 @@ end_games |>
     end_games |>
       select(date, team = away_team, scored = away_score, allowed = home_score)
   ) |>
-  filter(team == "Milwaukee Brewers") |>
-  arrange(date) |>
-  mutate(rs = rollapply(scored, width = 7, FUN = "mean", align = "right", fill = NA),
-         ra = rollapply(allowed, width = 7, FUN = "mean", align = "right", fill = NA),
-         game_num = row_number()) |>
-  select(game_num, team, rs, ra) |>
-  na.omit() |>
-  pivot_longer(cols = c("rs", "ra"), names_to = "which", values_to = "runs") |>
-  mutate(which = ifelse(which == "rs", "Runs Scored", "Runs Allowed"),
-         which = factor(which, levels = c("Runs Scored", "Runs Allowed"))) |>
-  ggplot(aes(game_num, runs)) +
-  geom_line(aes(col = which), linewidth = 1.5) +
-  labs(x = "Game Number", y = "Runs Scored/Allowed", col = NULL,
-       title = "Milwaukee Brewers: Runs Scored vs. Allowed in 7-Game Rolling Windows") +
-  scale_color_manual(values = c("springgreen4", "indianred3")) +
-  scale_x_continuous(breaks = seq(0, 162, by = 10)) +
-  scale_y_continuous(breaks = seq(0, 10, by = 1))
-```
-
-![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
-
-``` r
-end_games |>
-  select(date, team = home_team, scored = home_score, allowed = away_score) |>
-  bind_rows(
-    end_games |>
-      select(date, team = away_team, scored = away_score, allowed = home_score)
-  ) |>
   arrange(team, date) |>
   mutate(rdiff = scored - allowed) |>
   mutate(cum_diff = cumsum(rdiff),
@@ -298,7 +270,7 @@ end_games |>
   scale_x_continuous(breaks = seq(0, 162, by = 20))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ``` r
 top_teams = team_records |>
@@ -352,4 +324,4 @@ end_with_npr |>
   scale_y_continuous(breaks = seq(-300, 300, by = 20))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
