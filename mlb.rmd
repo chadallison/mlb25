@@ -1013,6 +1013,68 @@ end_with_npr |>
   scale_y_continuous(breaks = seq(-300, 300, by = 20))
 ```
 
+```{r}
+top_teams = team_records |>
+  slice_max(win_pct, n = 5, with_ties = F) |>
+  pull(team)
+
+plot_data = end_games |>
+  transmute(date, team = home_team, margin = home_score - away_score) |>
+  bind_rows(
+    end_games |>
+      transmute(date, team = away_team, margin = away_score - home_score)
+  ) |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         cum_marg = cumsum(margin),
+         .by = "team") |>
+  filter(team %in% top_teams) |>
+  mutate(team = factor(team, levels = top_teams)) |>
+  left_join(teams_info |> select(team, abb), by = "team")
+
+# get last point per team for labeling
+label_data = plot_data |>
+  group_by(team) |>
+  slice_max(game_num, n = 1) |>
+  ungroup()
+
+ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
+  geom_line(aes(col = team), linewidth = 2, show.legend = F) +
+  ggrepel::geom_text_repel(data = label_data, aes(label = abb, col = team),
+                  hjust = 0, nudge_x = 5, direction = "y", show.legend = F) +
+  scale_color_manual(values = setNames(teams_info$hex[match(top_teams, teams_info$team)], top_teams)) +
+  labs(x = "Game Number", y = "Cumulative Run Margin",
+       title = "Season-long run margin, top five teams by win percentage") +
+  scale_x_continuous(breaks = seq(0, 162, by = 10), expand = expansion(mult = c(0, 0.1))) +
+  scale_y_continuous(breaks = seq(-100, 300, by = 20))
+```
+
+
+```{r}
+all_margins = end_games |>
+  transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
+  bind_rows(
+    end_games |>
+      transmute(date, team = away_team, scored = away_score, allowed = home_score)
+  ) |>
+  arrange(team, date)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
