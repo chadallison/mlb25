@@ -365,7 +365,7 @@ ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
 ![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
-all_margins = end_games |>
+end_games |>
   transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
   bind_rows(
     end_games |>
@@ -373,3 +373,18 @@ all_margins = end_games |>
   ) |>
   arrange(team, date)
 ```
+
+    ## # A tibble: 3,830 × 4
+    ##    date       team                 scored allowed
+    ##    <date>     <chr>                 <dbl>   <dbl>
+    ##  1 2025-03-27 Arizona Diamondbacks      6      10
+    ##  2 2025-03-28 Arizona Diamondbacks      8       1
+    ##  3 2025-03-29 Arizona Diamondbacks      3       4
+    ##  4 2025-03-30 Arizona Diamondbacks     10       6
+    ##  5 2025-04-01 Arizona Diamondbacks      7       5
+    ##  6 2025-04-02 Arizona Diamondbacks      4       3
+    ##  7 2025-04-03 Arizona Diamondbacks      7       9
+    ##  8 2025-04-04 Arizona Diamondbacks      6       4
+    ##  9 2025-04-05 Arizona Diamondbacks      3       4
+    ## 10 2025-04-06 Arizona Diamondbacks      4       5
+    ## # ℹ 3,820 more rows

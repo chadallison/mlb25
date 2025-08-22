@@ -1051,7 +1051,7 @@ ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
 
 
 ```{r}
-all_margins = end_games |>
+end_games |>
   transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
   bind_rows(
     end_games |>
