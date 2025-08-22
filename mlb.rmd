@@ -1051,13 +1051,36 @@ ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
 
 
 ```{r}
+max_margin = end_games |>
+  filter(home_score > away_score) |>
+  mutate(margin = home_score - away_score) |>
+  slice_min(margin, prop = 0.8, with_ties = F) |>
+  pull(margin) |>
+  max()
+
+top_teams = team_records |>
+  slice_max(win_pct, n = 10, with_ties = F) |>
+  pull(team)
+
 end_games |>
   transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
   bind_rows(
     end_games |>
       transmute(date, team = away_team, scored = away_score, allowed = home_score)
   ) |>
-  arrange(team, date)
+  arrange(team, date) |>
+  filter(abs(scored - allowed) <= max_margin) |>
+  mutate(margin = scored - allowed) |>
+  mutate(game_num = row_number(),
+         cum_marg = cumsum(margin),
+         .by = "team") |>
+  filter(team %in% top_teams) |>
+  ggplot(aes(game_num, cum_marg)) +
+  geom_line(aes(col = team), linewidth = 1.25, alpha = 0.2) +
+  geom_line(aes(col = team), stat = "smooth", formula = y ~ x, method = "loess", linewidth = 1.25) +
+  labs(x = "Game number", y = "Cumulative run margin",
+       title = "Cumulative run margins among top teams",
+       subtitle = "Games with 80th percentile win margin or greater removed")
 ```
 
 
