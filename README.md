@@ -365,26 +365,36 @@ ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
 ![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
+max_margin = end_games |>
+  filter(home_score > away_score) |>
+  mutate(margin = home_score - away_score) |>
+  slice_min(margin, prop = 0.8, with_ties = F) |>
+  pull(margin) |>
+  max()
+
+top_teams = team_records |>
+  slice_max(win_pct, n = 10, with_ties = F) |>
+  pull(team)
+
 end_games |>
   transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
   bind_rows(
     end_games |>
       transmute(date, team = away_team, scored = away_score, allowed = home_score)
   ) |>
-  arrange(team, date)
+  arrange(team, date) |>
+  filter(abs(scored - allowed) <= max_margin) |>
+  mutate(margin = scored - allowed) |>
+  mutate(game_num = row_number(),
+         cum_marg = cumsum(margin),
+         .by = "team") |>
+  filter(team %in% top_teams) |>
+  ggplot(aes(game_num, cum_marg)) +
+  geom_line(aes(col = team), linewidth = 1.25, alpha = 0.2) +
+  geom_line(aes(col = team), stat = "smooth", formula = y ~ x, method = "loess", linewidth = 1.25) +
+  labs(x = "Game number", y = "Cumulative run margin",
+       title = "Cumulative run margins among top teams",
+       subtitle = "Games with 80th percentile win margin or greater removed")
 ```
 
-    ## # A tibble: 3,830 × 4
-    ##    date       team                 scored allowed
-    ##    <date>     <chr>                 <dbl>   <dbl>
-    ##  1 2025-03-27 Arizona Diamondbacks      6      10
-    ##  2 2025-03-28 Arizona Diamondbacks      8       1
-    ##  3 2025-03-29 Arizona Diamondbacks      3       4
-    ##  4 2025-03-30 Arizona Diamondbacks     10       6
-    ##  5 2025-04-01 Arizona Diamondbacks      7       5
-    ##  6 2025-04-02 Arizona Diamondbacks      4       3
-    ##  7 2025-04-03 Arizona Diamondbacks      7       9
-    ##  8 2025-04-04 Arizona Diamondbacks      6       4
-    ##  9 2025-04-05 Arizona Diamondbacks      3       4
-    ## 10 2025-04-06 Arizona Diamondbacks      4       5
-    ## # ℹ 3,820 more rows
+![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
