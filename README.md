@@ -293,7 +293,7 @@ top_teams = team_records |>
 #   scale_color_manual(values = team_hex)
 
 top_teams = team_records |>
-  slice_max(win_pct, n = 10, with_ties = FALSE) |>
+  slice_max(win_pct, n = 10, with_ties = F) |>
   pull(team)
 
 end_with_npr |>
