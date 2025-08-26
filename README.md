@@ -376,7 +376,7 @@ top_teams = team_records |>
   slice_max(win_pct, n = 10, with_ties = F) |>
   pull(team)
 
-end_games |>
+plot_data = end_games |>
   transmute(date, team = home_team, scored = home_score, allowed = away_score) |>
   bind_rows(
     end_games |>
@@ -384,17 +384,81 @@ end_games |>
   ) |>
   arrange(team, date) |>
   filter(abs(scored - allowed) <= max_margin) |>
-  mutate(margin = scored - allowed) |>
-  mutate(game_num = row_number(),
+  mutate(margin = scored - allowed,
+         game_num = row_number(),
          cum_marg = cumsum(margin),
          .by = "team") |>
   filter(team %in% top_teams) |>
-  ggplot(aes(game_num, cum_marg)) +
-  geom_line(aes(col = team), linewidth = 1.25, alpha = 0.2) +
-  geom_line(aes(col = team), stat = "smooth", formula = y ~ x, method = "loess", linewidth = 1.25) +
+  left_join(teams_info |> select(team, abb, hex), by = "team") |>
+  mutate(team = factor(team, levels = top_teams))
+
+label_data = plot_data |>
+  group_by(team) |>
+  slice_max(game_num, n = 1) |>
+  ungroup()
+
+ggplot(plot_data, aes(game_num, cum_marg, group = team)) +
+  geom_line(aes(col = team), linewidth = 1.25, alpha = 0.2, show.legend = F) +
+  geom_line(aes(col = team), stat = "smooth", formula = y ~ x, method = "loess", linewidth = 1.25, show.legend = F) +
+  ggrepel::geom_text_repel(data = label_data, aes(label = abb, col = team),
+                  hjust = 0, nudge_x = 5, direction = "y", show.legend = F) +
+  scale_color_manual(values = setNames(teams_info$hex[match(top_teams, teams_info$team)], top_teams)) +
   labs(x = "Game number", y = "Cumulative run margin",
        title = "Cumulative run margins among top teams",
-       subtitle = "Games with 80th percentile win margin or greater removed")
+       subtitle = "Games with 80th percentile win margin or greater removed") +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1)))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+``` r
+get_team_adj_sos = function(tm) {
+  home = end_games |>
+    filter(home_team == tm) |>
+    count(opp = away_team, name = "games_played")
+  
+  away = end_games |>
+    filter(away_team == tm) |>
+    count(opp = home_team, name = "games_played")
+  
+  opps = bind_rows(home, away) |>
+    group_by(opp) |>
+    summarise(games_played = sum(games_played),
+              .groups = "drop")
+  
+  opp_win_pct = end_games |>
+    filter(home_team != tm & away_team != tm) |>
+    mutate(winner = case_when(home_score > away_score ~ home_team,
+                              away_score > home_score ~ away_team)) |>
+    pivot_longer(cols = c(home_team, away_team), names_to = "loc", values_to = "team") |>
+    group_by(team) |>
+    summarise(wins = sum(winner == team),
+              games = n(),
+              win_pct = wins / games,
+              .groups = "drop")
+  
+  sos = opps |>
+    inner_join(opp_win_pct, by = c("opp" = "team")) |>
+    summarise(sos = sum(win_pct * games_played) / sum(games_played)) |>
+    pull(sos) |> round(3)
+  
+  return(sos)
+}
+
+data.frame(team = all_teams) |>
+  mutate(adj_sos = sapply(team, get_team_adj_sos)) |>
+  inner_join(team_records, by = "team") |>
+  mutate(win_pct = win_pct / 100) |>
+  ggplot(aes(adj_sos, win_pct)) +
+  geom_point(aes(col = team), shape = "square", size = 4, show.legend = F) +
+  scale_color_manual(values = team_hex) +
+  ggrepel::geom_text_repel(aes(label = abb), size = 3, max.overlaps = 30) +
+  geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", alpha = 0.5) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.005), labels = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), labels = scales::percent) +
+  labs(x = "Adjusted Strength of Schedule", y = "Win Percentage",
+       title = "Win percentage by adjusted opponent strength of schedule")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
