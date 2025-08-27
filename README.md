@@ -416,16 +416,16 @@ get_team_adj_sos = function(tm) {
   home = end_games |>
     filter(home_team == tm) |>
     count(opp = away_team, name = "games_played")
-  
+
   away = end_games |>
     filter(away_team == tm) |>
     count(opp = home_team, name = "games_played")
-  
+
   opps = bind_rows(home, away) |>
     group_by(opp) |>
     summarise(games_played = sum(games_played),
               .groups = "drop")
-  
+
   opp_win_pct = end_games |>
     filter(home_team != tm & away_team != tm) |>
     mutate(winner = case_when(home_score > away_score ~ home_team,
@@ -436,12 +436,12 @@ get_team_adj_sos = function(tm) {
               games = n(),
               win_pct = wins / games,
               .groups = "drop")
-  
+
   sos = opps |>
     inner_join(opp_win_pct, by = c("opp" = "team")) |>
     summarise(sos = sum(win_pct * games_played) / sum(games_played)) |>
     pull(sos) |> round(3)
-  
+
   return(sos)
 }
 
