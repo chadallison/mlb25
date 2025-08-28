@@ -462,3 +462,72 @@ data.frame(team = all_teams) |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+
+``` r
+games_long = end_games |>
+  transmute(date, team = home_team, opp = away_team, win_flg = as.integer(home_team == win_team)) |>
+  bind_rows(
+    end_games |>
+      transmute(date, team = away_team, opp = home_team, win_flg = as.integer(away_team == win_team))
+  )
+
+team_opp_stats = games_long |>
+  group_by(team, opp) |>
+  summarise(wins_vs_opp = sum(win_flg),
+            games_vs_opp = n(),
+            .groups = "drop")
+
+team_totals = team_opp_stats |>
+  group_by(team) |>
+  summarise(total_wins = sum(wins_vs_opp),
+            total_games = sum(games_vs_opp),
+            .groups = "drop")
+
+team_win_excl = team_opp_stats |>
+  inner_join(team_totals, by = "team") |>
+  mutate(wins_excl = total_wins - wins_vs_opp,
+         games_excl = total_games - games_vs_opp,
+         win_pct_excl = ifelse(games_excl > 0, wins_excl / games_excl, NA_real_)) |>
+  select(team, excluded_opp = opp, win_pct_excl)
+
+team_win_pts = games_long |>
+  left_join(team_win_excl, by = c("opp" = "team", "team" = "excluded_opp")) |>
+  mutate(win_pct_excl = coalesce(win_pct_excl, 0),
+         pts = round(ifelse(win_flg == 1, win_pct_excl, -0.5 * win_pct_excl), 3)) |>
+  group_by(team) |>
+  summarise(pts = sum(pts), .groups = "drop") |>
+  mutate(pl = ifelse(pts >= 0, round(pts, 2), ""),
+         nl = ifelse(pts < 0, round(pts, 2), ""))
+
+team_win_pts |>
+  ggplot(aes(reorder(team, pts), pts)) +
+  geom_col(aes(fill = team), show.legend = F) +
+  geom_text(aes(label = pl), size = 3, hjust = -0.25) +
+  geom_text(aes(label = nl), size = 3, hjust = 1.25) +
+  coord_flip(ylim = c(min(team_win_pts$pts) * 1.1, max(team_win_pts$pts) * 1.1)) +
+  scale_fill_manual(values = team_hex) +
+  labs(x = NULL, y = "Win Points",
+       title = "Team Win Points") +
+  scale_y_continuous(breaks = seq(-100, 100, by = 5))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
+``` r
+games_long |>
+  left_join(team_win_excl, by = c("opp" = "team", "team" = "excluded_opp")) |>
+  mutate(win_pct_excl = coalesce(win_pct_excl, 0),
+         pts = round(ifelse(win_flg == 1, win_pct_excl, -0.5 * win_pct_excl), 3)) |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         cum_pts = cumsum(pts),
+         .by = "team") |>
+  mutate(roll_cum = rollapply(cum_pts, width = 5, align = "right", FUN = "mean", fill = NA)) |>
+  na.omit() |>
+  ggplot(aes(game_num, roll_cum)) +
+  geom_line(aes(col = team), linewidth = 1.25, show.legend = F) +
+  scale_color_manual(values = team_hex) +
+  labs(title = "I'll clean this one up but for now enjoy the abstract art")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
