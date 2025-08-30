@@ -328,7 +328,7 @@ end_with_npr |>
 
 ``` r
 top_teams = team_records |>
-  slice_max(win_pct, n = 5, with_ties = F) |>
+  slice_max(win_pct, n = 7, with_ties = F) |>
   pull(team)
 
 plot_data = end_games |>
@@ -490,10 +490,12 @@ team_win_excl = team_opp_stats |>
          win_pct_excl = ifelse(games_excl > 0, wins_excl / games_excl, NA_real_)) |>
   select(team, excluded_opp = opp, win_pct_excl)
 
+loss_weighting = 1
+
 team_win_pts = games_long |>
   left_join(team_win_excl, by = c("opp" = "team", "team" = "excluded_opp")) |>
   mutate(win_pct_excl = coalesce(win_pct_excl, 0),
-         pts = round(ifelse(win_flg == 1, win_pct_excl, -0.5 * win_pct_excl), 3)) |>
+         pts = round(ifelse(win_flg == 1, win_pct_excl, -loss_weighting * win_pct_excl), 3)) |>
   group_by(team) |>
   summarise(pts = sum(pts), .groups = "drop") |>
   mutate(pl = ifelse(pts >= 0, round(pts, 2), ""),
@@ -514,7 +516,9 @@ team_win_pts |>
 ![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
 
 ``` r
-games_long |>
+library(plotly)
+
+plot = games_long |>
   left_join(team_win_excl, by = c("opp" = "team", "team" = "excluded_opp")) |>
   mutate(win_pct_excl = coalesce(win_pct_excl, 0),
          pts = round(ifelse(win_flg == 1, win_pct_excl, -0.5 * win_pct_excl), 3)) |>
@@ -527,7 +531,18 @@ games_long |>
   ggplot(aes(game_num, roll_cum)) +
   geom_line(aes(col = team), linewidth = 1.25, show.legend = F) +
   scale_color_manual(values = team_hex) +
-  labs(title = "I'll clean this one up but for now enjoy the abstract art")
+  labs(x = "Game number", y = "Cumulative win value", title = "Abstract art") +
+  scale_x_continuous(breaks = seq(0, 162, by = 10)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 5))
+
+mode = "normal"
+# mode = "plotly"
+
+if (mode == "normal") {
+  plot
+} else if (mode == "plotly") {
+  ggplotly(plot)
+}
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
