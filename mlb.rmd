@@ -1149,10 +1149,10 @@ data.frame(team = all_teams) |>
 
 ```{r}
 games_long = end_games |>
-  transmute(date, team = home_team, opp = away_team, win_flg = as.integer(home_team == win_team)) |>
+  transmute(date, team = home_team, opp = away_team, margin = home_score - away_score, win_flg = as.integer(home_team == win_team)) |>
   bind_rows(
     end_games |>
-      transmute(date, team = away_team, opp = home_team, win_flg = as.integer(away_team == win_team))
+      transmute(date, team = away_team, opp = home_team, margin = away_score - home_score, win_flg = as.integer(away_team == win_team))
   )
 
 team_opp_stats = games_long |>
@@ -1228,6 +1228,41 @@ if (mode == "normal") {
 }
 ```
 
+
+```{r}
+top_teams = team_records |>
+  slice_max(win_pct, n = 8, with_ties = F) |>
+  pull(team)
+
+ordered_hex = teams_info |>
+  filter(team %in% top_teams) |>
+  mutate(team = factor(team, levels = top_teams)) |>
+  arrange(team) |>
+  select(team, hex) |>
+  deframe()
+
+games_long |>
+  left_join(team_win_excl, by = c("opp" = "team", "team" = "excluded_opp")) |>
+  mutate(win_pct_excl = coalesce(win_pct_excl, 0),
+         pts = round(ifelse(win_flg == 1, win_pct_excl, -1 * win_pct_excl), 3)) |>
+  arrange(team, date) |>
+  mutate(game_num = row_number(),
+         cum_pts = cumsum(pts),
+         .by = "team") |>
+  mutate(pts_marg = log(abs(margin) + 1) * pts) |>
+  filter(team %in% top_teams) |>
+  mutate(cpm = cumsum(pts_marg),
+         cpm2 = rollapply(cpm, width = 5, align = "right", FUN = "mean", fill = NA),
+         .by = "team") |>
+  na.omit() |>
+  mutate(team = factor(team, levels = top_teams)) |>
+  ggplot(aes(date, cpm2)) +
+  geom_line(aes(col = team), linewidth = 1.5) +
+  scale_color_manual(values = ordered_hex) +
+  scale_y_continuous(breaks = seq(0, 100, by = 5)) +
+  labs(x = NULL, y = "Cumulative victory points", col = NULL,
+       title = "Season-long cumulative victory points among top teams")
+```
 
 
 
