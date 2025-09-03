@@ -1171,7 +1171,7 @@ team_win_excl = team_opp_stats |>
   inner_join(team_totals, by = "team") |>
   mutate(wins_excl = total_wins - wins_vs_opp,
          games_excl = total_games - games_vs_opp,
-         win_pct_excl = ifelse(games_excl > 0, wins_excl / games_excl, NA_real_)) |>
+         win_pct_excl = ifelse(games_excl > 0, wins_excl / games_excl, NA)) |>
   select(team, excluded_opp = opp, win_pct_excl)
 
 loss_weighting = 1
