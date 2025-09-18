@@ -549,7 +549,7 @@ if (mode == "normal") {
 
 ``` r
 top_teams = team_records |>
-  slice_max(win_pct, n = 8, with_ties = F) |>
+  slice_max(win_pct, n = 5, with_ties = F) |>
   pull(team)
 
 ordered_hex = teams_info |>
