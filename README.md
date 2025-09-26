@@ -619,6 +619,12 @@ adj_diff_long |>
 ![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
 
 ``` r
+adj_diff_agg = adj_diff_long |>
+  filter(date >= Sys.Date() - 30) |>
+  group_by(team) |>
+  summarise(adj_diff = sum(adj_diff)) |>
+  arrange(desc(adj_diff))
+
 adj_diff_agg |>
   inner_join(teams_info, by = "team") |>
   ggplot(aes(x = reorder(team, adj_diff), y = adj_diff)) +
@@ -626,7 +632,8 @@ adj_diff_agg |>
   geom_text(aes(label = round(adj_diff, 2), hjust = ifelse(adj_diff > 0, -0.25, 1.25)), size = 3) +
   coord_flip(ylim = c(min(adj_diff_agg$adj_diff) * 1.05, max(adj_diff_agg$adj_diff) * 1.05)) +
   scale_fill_identity() +
-  labs(x = NULL, y = "Total Adjusted Run Differential")
+  labs(x = NULL, y = "Total Adjusted Run Differential") +
+  scale_y_continuous(breaks = seq(-25, 25, by = 2))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
