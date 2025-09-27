@@ -604,13 +604,15 @@ adj_diff_agg = adj_diff_long |>
   arrange(desc(adj_diff))
 
 adj_diff_long |>
-  filter(team %in% (adj_diff_agg |> slice_max(adj_diff, n = 12, with_ties = T) |> pull(team))) |>
+  filter(team %in% (team_records |> slice_max(win_pct, n = 12, with_ties = T) |> pull(team))) |>
   inner_join(teams_info, by = "team") |>
   arrange(team, date) |>
   mutate(row_num = row_number(),
          cum_adj_diff = cumsum(adj_diff), .by = "team") |>
   ggplot(aes(row_num, cum_adj_diff)) +
+  # geom_hline(yintercept = 20, linetype = "dashed", alpha = 0.5) +
   geom_hline(yintercept = 30, linetype = "dashed", alpha = 0.5) +
+  # geom_hline(yintercept = 40, linetype = "dashed", alpha = 0.5) +
   geom_line(aes(col = hex), linewidth = 1.5, show.legend = F) +
   facet_wrap(vars(team)) +
   scale_color_identity()
@@ -620,7 +622,15 @@ adj_diff_long |>
 
 ``` r
 adj_diff_agg = adj_diff_long |>
-  filter(date >= Sys.Date() - 30) |>
+  filter(team %in% (
+    team_records |>
+      slice_max(win_pct, n = 15, with_ties = T) |>
+      pull(team)
+    )) |>
+  mutate(game_num = row_number(),
+         games_played = n(),
+         .by = "team") |>
+  filter(game_num >= games_played - 25) |>
   group_by(team) |>
   summarise(adj_diff = sum(adj_diff)) |>
   arrange(desc(adj_diff))
@@ -632,8 +642,10 @@ adj_diff_agg |>
   geom_text(aes(label = round(adj_diff, 2), hjust = ifelse(adj_diff > 0, -0.25, 1.25)), size = 3) +
   coord_flip(ylim = c(min(adj_diff_agg$adj_diff) * 1.05, max(adj_diff_agg$adj_diff) * 1.05)) +
   scale_fill_identity() +
-  labs(x = NULL, y = "Total Adjusted Run Differential") +
-  scale_y_continuous(breaks = seq(-25, 25, by = 2))
+  labs(x = NULL, y = "Total Adjusted Run Differential",
+       title = "Adjusted run differential, past 25 games",
+       subtitle = "Teams with top 15 win percentage only") +
+  scale_y_continuous(breaks = seq(-30, 30, by = 2))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
