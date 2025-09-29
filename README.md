@@ -649,3 +649,24 @@ adj_diff_agg |>
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
+
+``` r
+adj_diff_long |>
+  filter(team %in% c("Chicago Cubs", "San Diego Padres")) |>
+  mutate(game_num = row_number(),
+         cum_diff = cumsum(adj_diff),
+         .by = "team") |>
+  inner_join(teams_info, by = "team") |>
+  ggplot(aes(game_num, cum_diff)) +
+  geom_line(aes(col = hex), linewidth = 1.5, show.legend = F) +
+  geom_vline(xintercept = 97, linetype = "dashed", alpha = 0.5) +
+  scale_color_identity() +
+  labs(x = "Game number",
+       y = "Cumulative adjusted run differential",
+       title = "Season-long adjusted run differential: Cubs vs. Padres",
+       subtitle = "Vertical line represents All-Star break") +
+  scale_x_continuous(breaks = seq(0, 162, by = 10)) +
+  scale_y_continuous(breaks = seq(-50, 50, by = 5))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
